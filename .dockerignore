@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+.github
+legacy
+docs
+k8s
+*.md
+.env.local
+.env*.local
+.DS_Store
+Dockerfile
+.dockerignore
+npm-debug.log*
