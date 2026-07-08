@@ -46,8 +46,8 @@ async function convertToWebP(file: File, quality = 0.82): Promise<Blob | null> {
 export async function sbUploadImage(
   file: File,
   folder: "covers" | "gallery",
-): Promise<string | null> {
-  if (!sb) return null;
+): Promise<{ url: string | null; error?: string }> {
+  if (!sb) return { url: null, error: "Supabase not configured" };
 
   const isVideo = file.type.startsWith("video/");
   const isGif = file.type === "image/gif";
@@ -78,10 +78,10 @@ export async function sbUploadImage(
   });
   if (error) {
     console.error("sbUploadImage:", error.message);
-    return null;
+    return { url: null, error: error.message };
   }
   const { data } = sb.storage.from("images").getPublicUrl(path);
-  return data?.publicUrl ?? null;
+  return { url: data?.publicUrl ?? null };
 }
 
 export async function sbDeleteImage(url: string): Promise<boolean> {
