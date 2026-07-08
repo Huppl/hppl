@@ -1,0 +1,18 @@
+diff --git a/src/lib/supabase.ts b/src/lib/supabase.ts
+index b87accd..f8a9e1d 100644
+--- a/src/lib/supabase.ts
++++ b/src/lib/supabase.ts
+@@ -109,6 +109,12 @@ export async function sbUpdateContact(
+   if (error) console.error("sbUpdateContact:", error.message);
+   return !error;
+ }
++
++export async function sbDeleteContact(id: number): Promise<boolean> {
++  if (!sb) return false;
++  const { error } = await sb.from("contacts").delete().eq("id", id);
++  if (error) console.error("sbDeleteContact:", error.message);
++  return !error;
++}
+ 
+ // ---------- Uploads ----------
+ // Uploads a file to the public "images" bucket under `folder/` and returns
