@@ -207,6 +207,7 @@ ul.clean-list li:hover {
 .work-board {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-auto-rows: min-content;
   gap: 32px;
   width: min(100%, 1400px);
   margin: 160px auto 80px;
@@ -289,6 +290,16 @@ ul.clean-list li:hover {
   display: block;
   filter: grayscale(1) contrast(1.05);
   transition: filter 0.3s ease;
+}
+
+.work-card-natural {
+  max-width: none;
+}
+.work-card-natural .work-card-image img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
 }
 
 .media-preview-video {
@@ -802,6 +813,7 @@ ul.clean-list li:hover {
 .admin-gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-auto-rows: min-content;
   gap: 8px;
 }
 .admin-sublabel {
@@ -839,6 +851,121 @@ ul.clean-list li:hover {
   display: inline-block;
   cursor: pointer;
   text-align: center;
+}
+
+/* ---------- Pending files overlay (multi-upload) ---------- */
+.admin-pending-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  padding: 16px 24px;
+  max-height: 50vh;
+  overflow-y: auto;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4);
+}
+.admin-pending-overlay.drag-over {
+  border-top: 2px solid var(--accent);
+}
+.admin-pending-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.admin-pending-actions {
+  display: flex;
+  gap: 8px;
+}
+.admin-pending-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+.admin-pending-item {
+  position: relative;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.admin-pending-item img,
+.admin-pending-item video {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  display: block;
+}
+.admin-pending-item .admin-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--bg);
+  padding: 2px 6px;
+  font-size: 0.7rem;
+}
+.admin-pending-item.status-uploading {
+  opacity: 0.6;
+}
+.admin-pending-item.status-done {
+  border-color: #4caf50;
+}
+.admin-pending-item.status-error {
+  border-color: #f44336;
+}
+.admin-pending-name {
+  display: block;
+  font-size: 0.65rem;
+  padding: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dim);
+}
+.admin-pending-error-msg {
+  display: block;
+  font-size: 0.6rem;
+  padding: 0 4px 4px;
+  color: #f44336;
+  word-break: break-all;
+}
+.admin-pending-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-pending-spinner::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.admin-pending-dropzone {
+  margin-top: 12px;
+  padding: 20px;
+  border: 2px dashed var(--line);
+  text-align: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.admin-pending-overlay.drag-over .admin-pending-dropzone {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* ---------- Project gallery: mode toggle + grid + scroll + lightbox ---------- */
@@ -882,6 +1009,7 @@ ul.clean-list li:hover {
 .gallery-grid-color {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-auto-rows: min-content;
   gap: 16px;
 }
 
@@ -902,6 +1030,16 @@ ul.clean-list li:hover {
   height: auto;
   object-fit: cover;
   display: block;
+}
+
+.gallery-thumb-natural {
+  max-width: none;
+}
+.gallery-thumb-natural img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
 }
 
 .media-preview-thumb {

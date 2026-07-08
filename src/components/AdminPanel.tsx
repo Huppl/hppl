@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
 import { useProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
 import type { CategoryValue, Contact } from "@/lib/types";
-import { MediaPreview } from "@/components/MediaPreview";
+import { MediaPreview, isVideoUrl } from "@/components/MediaPreview";
 import {
   sbDeleteContact,
   sbDeleteProject,
@@ -23,9 +23,25 @@ import {
 
 type Tab = "projects" | "laboratory" | "contact";
 
-// General admin panel: sign in with the Supabase admin user, then edit projects,
-// the Laboratory line, and contact links. Writes go straight to Supabase; the
-// static fallback in src/data/projects.ts is updated via "Export code".
+type UploadStatus = "pending" | "uploading" | "done" | "error";
+
+interface PendingFile {
+  id: string;
+  file: File;
+  preview: string;
+  status: UploadStatus;
+  error?: string;
+}
+
+function fileToPending(file: File): PendingFile {
+  return {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    file,
+    preview: URL.createObjectURL(file),
+    status: "pending",
+  };
+}
+
 export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
   const { t } = useLang();
   const { projects, setProjects, reload } = useProjects();
@@ -40,7 +56,11 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [exportOutput, setExportOutput] = useState("");
   const [uploadingId, setUploadingId] = useState<number | null>(null);
-  const [galleryUploadingId, setGalleryUploadingId] = useState<number | null>(null);
+
+  const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
+  const [pendingProjectId, setPendingProjectId] = useState<number | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function openPanel() {
     setPanelOpen(true);
@@ -50,7 +70,6 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
     setContacts(list);
   }
 
-  // If autoOpen, sign-in success opens the panel directly
   useEffect(() => {
     if (autoOpen && authOpen) {
       sbIsAuthenticated().then((authed) => {
@@ -58,6 +77,12 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
       });
     }
   }, [autoOpen, authOpen]);
+
+  useEffect(() => {
+    return () => {
+      pendingFiles.forEach((f) => URL.revokeObjectURL(f.preview));
+    };
+  }, [pendingFiles]);
 
   async function handleSignIn() {
     setAuthBusy(true);
@@ -95,17 +120,99 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
     else alert(`${t("admin_upload_error")}${error ? `: ${error}` : ""}`);
   }
 
-  async function uploadGalleryImage(id: number, file: File) {
-    setGalleryUploadingId(id);
-    const { url, error } = await sbUploadImage(file, "gallery");
-    setGalleryUploadingId(null);
-    if (url) {
-      const current = projects.find((p) => p.id === id);
-      const gallery = [...(current?.gallery ?? []), url];
-      patchProject(id, { gallery });
-    } else {
-      alert(`${t("admin_upload_error")}${error ? `: ${error}` : ""}`);
+  // ---- Gallery multi-upload ----
+  function openFilePicker(projectId: number) {
+    setPendingProjectId(projectId);
+    setPendingFiles([]);
+    fileInputRef.current?.click();
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || !pendingProjectId) return;
+    addPendingFiles(Array.from(files));
+    e.target.value = "";
+  }
+
+  function addPendingFiles(files: File[]) {
+    const newItems = files.map(fileToPending);
+    setPendingFiles((prev) => [...prev, ...newItems]);
+  }
+
+  function removePendingFile(id: string) {
+    setPendingFiles((prev) => {
+      const item = prev.find((f) => f.id === id);
+      if (item) URL.revokeObjectURL(item.preview);
+      return prev.filter((f) => f.id !== id);
+    });
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0 && pendingProjectId) {
+      addPendingFiles(files);
     }
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(true);
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+  }
+
+  async function uploadPendingFiles() {
+    if (!pendingProjectId || pendingFiles.length === 0) return;
+
+    const project = projects.find((p) => p.id === pendingProjectId);
+    const existingGallery = [...(project?.gallery ?? [])];
+
+    setPendingFiles((prev) =>
+      prev.map((f) => (f.status === "pending" ? { ...f, status: "uploading" as const } : f)),
+    );
+
+    const results = await Promise.allSettled(
+      pendingFiles.map(async (pf) => {
+        const { url, error } = await sbUploadImage(pf.file, "gallery");
+        if (url) {
+          setPendingFiles((prev) =>
+            prev.map((f) => (f.id === pf.id ? { ...f, status: "done" as const } : f)),
+          );
+          return url;
+        }
+        setPendingFiles((prev) =>
+          prev.map((f) =>
+            f.id === pf.id ? { ...f, status: "error" as const, error } : f,
+          ),
+        );
+        return null;
+      }),
+    );
+
+    const newUrls = results
+      .filter((r): r is PromiseFulfilledResult<string> => r.status === "fulfilled" && r.value !== null)
+      .map((r) => r.value);
+
+    if (newUrls.length > 0) {
+      const gallery = [...existingGallery, ...newUrls];
+      patchProject(pendingProjectId, { gallery });
+    }
+
+    const errorCount = pendingFiles.length - newUrls.length;
+    if (errorCount > 0) {
+      alert(`${newUrls.length} uploaded, ${errorCount} failed`);
+    }
+
+    setTimeout(() => {
+      pendingFiles.forEach((f) => URL.revokeObjectURL(f.preview));
+      setPendingFiles([]);
+      setPendingProjectId(null);
+    }, 1500);
   }
 
   async function removeGalleryImage(id: number, index: number) {
@@ -169,8 +276,22 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
     setContacts((prev) => [...prev, created]);
   }
 
+  const pendingCount = pendingFiles.length;
+  const pendingDone = pendingFiles.filter((f) => f.status === "done").length;
+  const pendingErrors = pendingFiles.filter((f) => f.status === "error").length;
+
   return (
     <>
+      {/* Hidden file input for multi-select */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/mp4,video/webm,image/gif"
+        multiple
+        style={{ display: "none" }}
+        onChange={handleFileSelect}
+      />
+
       {/* Auth modal */}
       <div className={`admin-auth${authOpen ? " is-open" : ""}`}>
         <div className="admin-auth-modal">
@@ -266,7 +387,7 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
                     {uploadingId === p.id ? t("admin_uploading") : t("admin_upload_cover")}
                     <input
                       type="file"
-                      accept="image/*,video/mp4,video/webm"
+                      accept="image/*,video/mp4,video/webm,image/gif"
                       style={{ display: "none" }}
                       onChange={(e) => {
                         const f = e.target.files?.[0];
@@ -298,22 +419,12 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
                       </div>
                     </div>
                   ) : null}
-                  <label className="admin-btn admin-upload-label">
-                    {galleryUploadingId === p.id ? t("admin_uploading") : t("admin_upload_gallery")}
-                    <input
-                      type="file"
-                      accept="image/*,video/mp4,video/webm"
-                      multiple
-                      style={{ display: "none" }}
-                      onChange={(e) => {
-                        const files = e.target.files;
-                        if (files) {
-                          Array.from(files).forEach((f) => uploadGalleryImage(p.id, f));
-                        }
-                        e.target.value = "";
-                      }}
-                    />
-                  </label>
+                  <button
+                    className="admin-btn admin-upload-label"
+                    onClick={() => openFilePicker(p.id)}
+                  >
+                    {t("admin_upload_gallery")}
+                  </button>
                 </div>
               ))}
             </div>
@@ -384,6 +495,77 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
           </div>
         )}
       </div>
+
+      {/* Pending files overlay */}
+      {pendingFiles.length > 0 && (
+        <div
+          className={`admin-pending-overlay${dragOver ? " drag-over" : ""}`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+        >
+          <div className="admin-pending-header">
+            <span>
+              {t("admin_pending_files").replace("{n}", String(pendingCount))}
+              {pendingDone > 0 && ` — ${pendingDone} ${t("admin_pending_done")}`}
+              {pendingErrors > 0 && ` — ${pendingErrors} ${t("admin_pending_error")}`}
+            </span>
+            <div className="admin-pending-actions">
+              <button className="admin-btn" onClick={uploadPendingFiles}>
+                {t("admin_pending_upload")}
+              </button>
+              <button
+                className="admin-btn admin-btn-danger"
+                onClick={() => {
+                  pendingFiles.forEach((f) => URL.revokeObjectURL(f.preview));
+                  setPendingFiles([]);
+                  setPendingProjectId(null);
+                }}
+              >
+                {t("admin_pending_cancel")}
+              </button>
+            </div>
+          </div>
+          <div className="admin-pending-grid">
+            {pendingFiles.map((pf) => (
+              <div
+                key={pf.id}
+                className={`admin-pending-item status-${pf.status}`}
+              >
+                {isVideoUrl(pf.file.name) ? (
+                  <video src={pf.preview} muted loop playsInline />
+                ) : (
+                  <img src={pf.preview} alt={pf.file.name} />
+                )}
+                <span className="admin-pending-name">{pf.file.name}</span>
+                {pf.status === "error" && (
+                  <span className="admin-pending-error-msg">{pf.error}</span>
+                )}
+                {pf.status === "pending" && (
+                  <button
+                    className="admin-delete"
+                    title={t("admin_remove_image")}
+                    onClick={() => removePendingFile(pf.id)}
+                  >
+                    ✕
+                  </button>
+                )}
+                {pf.status === "uploading" && (
+                  <span className="admin-pending-spinner" />
+                )}
+              </div>
+            ))}
+          </div>
+          <div
+            className="admin-pending-dropzone"
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+          >
+            {t("admin_pending_dropzone")}
+          </div>
+        </div>
+      )}
     </>
   );
 }

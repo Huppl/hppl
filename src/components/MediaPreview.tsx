@@ -17,6 +17,11 @@ export function isMediaUrl(url: string): boolean {
   return isVideoUrl(url) || isGifUrl(url);
 }
 
+export interface NaturalSize {
+  width: number;
+  height: number;
+}
+
 interface MediaPreviewProps {
   src: string | null;
   alt: string;
@@ -28,6 +33,7 @@ interface MediaPreviewProps {
   autoPlay?: boolean;
   playsInline?: boolean;
   preload?: "auto" | "metadata" | "none";
+  onNaturalSize?: (size: NaturalSize) => void;
 }
 
 export function MediaPreview({
@@ -41,6 +47,7 @@ export function MediaPreview({
   autoPlay = true,
   playsInline = true,
   preload = "metadata",
+  onNaturalSize,
 }: MediaPreviewProps): ReactNode {
   if (!src) return null;
 
@@ -56,6 +63,10 @@ export function MediaPreview({
         playsInline={playsInline}
         preload={preload}
         controls={false}
+        onLoadedMetadata={(e) => {
+          const v = e.currentTarget;
+          onNaturalSize?.({ width: v.videoWidth, height: v.videoHeight });
+        }}
       />
     );
   }
@@ -67,6 +78,10 @@ export function MediaPreview({
       src={src}
       alt={alt}
       loading="lazy"
+      onLoad={(e) => {
+        const img = e.currentTarget;
+        onNaturalSize?.({ width: img.naturalWidth, height: img.naturalHeight });
+      }}
     />
   );
 }
