@@ -58,6 +58,7 @@ export function ProjectDetail({ id }: { id: number }) {
       meta: project.meta,
       category: project.category,
       image: project.image,
+      gallery: project.gallery,
       description: project.description,
     });
     alert(ok ? t("project_saved") : "Ошибка сохранения в Supabase — проверьте, что вы авторизованы.");
@@ -65,6 +66,14 @@ export function ProjectDetail({ id }: { id: number }) {
 
   function patch(fields: Partial<Project>) {
     setProject((prev) => (prev ? { ...prev, ...fields } : prev));
+  }
+
+  // Gallery admin
+  function removeImage(index: number) {
+    if (!project || !project.gallery) return;
+    const newGallery = [...project.gallery];
+    newGallery.splice(index, 1);
+    patch({ gallery: newGallery });
   }
 
   if (!loading && !project) {
@@ -99,10 +108,10 @@ export function ProjectDetail({ id }: { id: number }) {
             <p className="project-description">{project?.description || ""}</p>
           </div>
         </div>
-        <div className="project-hero-image">
-          {project?.image ? (
-            <img src={project.image} alt={`${project.title} preview`} />
-          ) : null}
+        <div className="project-gallery">
+          {(project?.gallery || [project?.image]).map((img, i) => img ? (
+             <img key={i} src={img} alt={`${project?.title} ${i}`} />
+          ) : null)}
         </div>
       </section>
 
@@ -184,6 +193,17 @@ export function ProjectDetail({ id }: { id: number }) {
               value={project?.image ?? ""}
               onChange={(e) => patch({ image: e.target.value || null })}
             />
+          </div>
+          <div className="admin-row">
+            <label>Галерея:</label>
+            <div className="admin-gallery-list">
+                {project?.gallery?.map((img, i) => (
+                    <div key={i}>
+                        <img src={img} style={{width: 50, height: 50, objectFit: 'cover'}}/>
+                        <button onClick={() => removeImage(i)}>✕</button>
+                    </div>
+                ))}
+            </div>
           </div>
           <div className="admin-row">
             <textarea

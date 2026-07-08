@@ -16,6 +16,7 @@ export interface Project {
   meta: string; // short line, e.g. "// Branding // 2026"
   category: CategoryValue;
   image: string | null; // path or URL; null → framed placeholder
+  gallery?: string[]; // array of image URLs
   description: string;
   link?: string | null; // legacy; routing now uses /project/<id>
   sort_order?: number | null;
