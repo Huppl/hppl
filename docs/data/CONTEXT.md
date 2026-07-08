@@ -7,7 +7,7 @@ How project/laboratory/contact content is stored, read, and edited.
 
 ## Two sources, one fallback
 
-1. **Supabase** (primary) — tables `projects`, `laboratory`, `contacts`.
+1. **Supabase** (primary) — tables `projects`, `laboratory` (shown as "About me"), `contacts`.
 2. **Static files** (fallback) — `src/data/projects.ts` (`PROJECTS_DEFAULT`) and
    `src/data/site.ts` (`DEFAULT_LABORATORY`, `DEFAULT_CONTACTS`, `CATEGORIES`).
 
@@ -22,7 +22,8 @@ just can't use the admin panel.
 - `projects`: `id`, `title`, `meta`, `category`, `image`, `description`,
   `link?`, `sort_order?`, `updated_at`. `category` is one of the `CATEGORIES`
   values in `src/data/site.ts` (`3d web branding art ai type motion`).
-- `laboratory`: single row `id = 1`, `content`, `updated_at`.
+- `laboratory`: single row `id = 1`, `content`, `updated_at`. Shown as "About me"
+  in the UI (the table name stays `laboratory` internally).
 - `contacts`: `id`, `label`, `url`, `sort_order?`.
 
 Row-level security gates **writes** to the admin user (`NEXT_PUBLIC_ADMIN_EMAIL`).

@@ -8,6 +8,7 @@ export function Hud() {
   const { lang, setLang, t } = useLang();
   const [time, setTime] = useState("--:--:--");
   const [loc, setLoc] = useState("DETECTING...");
+  const [navOpen, setNavOpen] = useState(false);
 
   useEffect(() => {
     const tick = () => {
@@ -34,19 +35,26 @@ export function Hud() {
           SYS // <span className="ui-dim">{time}</span>{" "}
           <span className="red-dot">●</span>
         </div>
-        <div className="ui-block" style={{ textAlign: "right" }}>
-          <ul className="clean-list">
+        <div className="ui-block" style={{ textAlign: "right", position: "relative" }}>
+          <button
+            className="nav-toggle"
+            onClick={() => setNavOpen((v) => !v)}
+            aria-label="Menu"
+          >
+            ☰
+          </button>
+          <ul className={`clean-list nav-links${navOpen ? " is-open" : ""}`}>
             <li>
-              <a href="/">{t("index")}</a>
+              <a href="/" onClick={() => setNavOpen(false)}>{t("index")}</a>
             </li>
             <li>
-              <a href="/#works">{t("works")}</a>
+              <a href="/#works" onClick={() => setNavOpen(false)}>{t("works")}</a>
             </li>
             <li>
-              <a href="/#laboratory">{t("laboratory")}</a>
+              <a href="/#about" onClick={() => setNavOpen(false)}>{t("laboratory")}</a>
             </li>
             <li>
-              <a href="/#contact">{t("contact")}</a>
+              <a href="/#contact" onClick={() => setNavOpen(false)}>{t("contact")}</a>
             </li>
             <li>
               <button

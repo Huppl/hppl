@@ -13,7 +13,7 @@ export const CATEGORIES: { value: CategoryValue; i18nKey: string }[] = [
 
 // Default Laboratory text when Supabase is unset/empty.
 export const DEFAULT_LABORATORY =
-  "Currently learning: Web Design, 3D Modeling, Creative Coding";
+  "Матвей Лукин — 20-летний студент-дизайнер. Изучаю веб-дизайн, 3D-моделирование и креативное программирование.";
 
 // Default contact links when Supabase is unset/empty.
 export const DEFAULT_CONTACTS: Contact[] = [

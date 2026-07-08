@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n";
@@ -24,6 +24,11 @@ export const metadata: Metadata = {
   title: "HPL // VISUAL RESEARCH",
   description: "Portfolio of Matvey Lukin — visual research, 3D, branding and creative coding.",
   metadataBase: new URL("https://hhppll.online"),
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

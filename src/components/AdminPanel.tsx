@@ -17,6 +17,7 @@ import {
   sbSignIn,
   sbUpdateContact,
   sbUpdateProject,
+  sbUploadImage,
 } from "@/lib/supabase";
 
 type Tab = "projects" | "laboratory" | "contact";
@@ -37,6 +38,7 @@ export function AdminPanel() {
   const [labText, setLabText] = useState("");
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [exportOutput, setExportOutput] = useState("");
+  const [uploadingId, setUploadingId] = useState<number | null>(null);
 
   async function openPanel() {
     setPanelOpen(true);
@@ -78,7 +80,15 @@ export function AdminPanel() {
   async function deleteProject(id: number) {
     const ok = await sbDeleteProject(id);
     if (ok) setProjects((prev) => prev.filter((p) => p.id !== id));
-    else alert("Не удалось удалить проект в Supabase.");
+    else alert(t("admin_error_delete_project"));
+  }
+
+  async function uploadCover(id: number, file: File) {
+    setUploadingId(id);
+    const url = await sbUploadImage(file, "covers");
+    setUploadingId(null);
+    if (url) patchProject(id, { image: url });
+    else alert(t("admin_upload_error"));
   }
 
   async function addProject() {
@@ -86,10 +96,12 @@ export function AdminPanel() {
       title: t("admin_new_project"),
       meta: "// Category // 2026",
       category: "3d",
-      image: null,
+      image: "",
+      gallery: [],
+      description: "",
     });
     if (!created) {
-      alert("Не удалось создать проект в Supabase. Проверьте, что вы авторизованы.");
+      alert(t("admin_error_create_project"));
       return;
     }
     setProjects((prev) => [...prev, created]);
@@ -102,14 +114,14 @@ export function AdminPanel() {
   }
 
   async function resetProjects() {
-    if (!confirm("Перечитать данные из Supabase? Несохранённые локальные изменения будут потеряны.")) return;
+    if (!confirm(t("admin_confirm_reload"))) return;
     await reload();
   }
 
   // ---- Laboratory ----
   async function saveLab() {
     const ok = await sbSaveLaboratory(labText);
-    alert(ok ? t("admin_lab_save") : "Ошибка сохранения в Supabase — проверьте, что вы авторизованы.");
+    alert(ok ? t("admin_lab_save") : t("admin_error_save"));
   }
 
   // ---- Contacts ----
@@ -121,13 +133,13 @@ export function AdminPanel() {
   async function deleteContact(id: number) {
     const ok = await sbDeleteContact(id);
     if (ok) setContacts((prev) => prev.filter((c) => c.id !== id));
-    else alert("Не удалось удалить контакт в Supabase.");
+    else alert(t("admin_error_delete_contact"));
   }
 
   async function addContact() {
     const created = await sbInsertContact({ label: t("admin_new_contact"), url: "" });
     if (!created) {
-      alert("Не удалось создать контакт в Supabase. Проверьте, что вы авторизованы.");
+      alert(t("admin_error_create_contact"));
       return;
     }
     setContacts((prev) => [...prev, created]);
@@ -137,7 +149,7 @@ export function AdminPanel() {
     <>
       <button
         className="admin-toggle"
-        title="Открыть панель админа"
+        title={t("admin_toggle_title")}
         onClick={handleToggle}
       >
         ADMIN
@@ -200,7 +212,7 @@ export function AdminPanel() {
             <div className="admin-list">
               {projects.map((p) => (
                 <div key={p.id} className="admin-row">
-                  <button className="admin-delete" title="Удалить" onClick={() => deleteProject(p.id)}>
+                  <button className="admin-delete" title={t("admin_delete_title")} onClick={() => deleteProject(p.id)}>
                     ✕
                   </button>
                   <input
@@ -232,8 +244,21 @@ export function AdminPanel() {
                     className="admin-field"
                     placeholder={t("admin_field_image")}
                     defaultValue={p.image ?? ""}
-                    onBlur={(e) => patchProject(p.id, { image: e.target.value || null })}
+                    onBlur={(e) => patchProject(p.id, { image: e.target.value || "" })}
                   />
+                  <label className="admin-btn admin-upload-label">
+                    {uploadingId === p.id ? t("admin_uploading") : t("admin_upload_cover")}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) uploadCover(p.id, f);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
                 </div>
               ))}
             </div>

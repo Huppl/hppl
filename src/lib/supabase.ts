@@ -16,6 +16,43 @@ export const sb: SupabaseClient | null =
 
 export const supabaseEnabled = sb !== null;
 
+// ---------- Storage (image uploads) ----------
+export async function sbUploadImage(
+  file: File,
+  folder: "covers" | "gallery",
+): Promise<string | null> {
+  if (!sb) return null;
+  const ext = file.name.split(".").pop() ?? "jpg";
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { error } = await sb.storage.from("images").upload(path, file, {
+    contentType: file.type || "image/jpeg",
+    upsert: false,
+  });
+  if (error) {
+    console.error("sbUploadImage:", error.message);
+    return null;
+  }
+  const { data } = sb.storage.from("images").getPublicUrl(path);
+  return data?.publicUrl ?? null;
+}
+
+export async function sbDeleteImage(url: string): Promise<boolean> {
+  if (!sb) return false;
+  try {
+    const bucketUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/`;
+    if (!url.startsWith(bucketUrl)) return false;
+    const path = url.slice(bucketUrl.length);
+    const { error } = await sb.storage.from("images").remove([path]);
+    if (error) {
+      console.error("sbDeleteImage:", error.message);
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // ---------- Auth ----------
 export async function sbSignIn(password: string) {
   if (!sb) return { error: new Error("Supabase not configured") };
