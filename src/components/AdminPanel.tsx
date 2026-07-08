@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLang } from "@/lib/i18n";
 import { useProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
@@ -227,6 +227,7 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
       title: t("admin_new_project"),
       meta: "// Category // 2026",
       category: "3d",
+      tags: ["3d"],
       image: "",
       gallery: [],
       description: "",
@@ -364,19 +365,30 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
                     defaultValue={p.meta}
                     onBlur={(e) => patchProject(p.id, { meta: e.target.value })}
                   />
-                  <select
-                    className="admin-field"
-                    defaultValue={p.category}
-                    onChange={(e) =>
-                      patchProject(p.id, { category: e.target.value as CategoryValue })
-                    }
-                  >
-                    {CATEGORIES.map((c) => (
-                      <option key={c.value} value={c.value}>
-                        {t(c.i18nKey)}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="admin-field admin-tags-select">
+                    {CATEGORIES.map((c) => {
+                      const active = (p.tags ?? [p.category]).includes(c.value as CategoryValue);
+                      return (
+                        <label
+                          key={c.value}
+                          className={`admin-tag-option${active ? " active" : ""}`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={active}
+                            onChange={() => {
+                              const current = p.tags ?? [p.category];
+                              const next = active
+                                ? current.filter((v) => v !== c.value)
+                                : [...current, c.value as CategoryValue];
+                              patchProject(p.id, { tags: next.length > 0 ? next : [p.category] });
+                            }}
+                          />
+                          {t(c.i18nKey)}
+                        </label>
+                      );
+                    })}
+                  </div>
                   <input
                     className="admin-field"
                     placeholder={t("admin_field_image")}

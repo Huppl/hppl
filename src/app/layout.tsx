@@ -7,17 +7,17 @@ import { GrainOverlay } from "@/components/GrainOverlay";
 const neutral = localFont({
   src: "./fonts/NeutralFace.woff",
   variable: "--font-neutral",
-  display: "swap",
+  display: "optional",
 });
 const nonBureau = localFont({
   src: "./fonts/NonBureau-Regular.otf",
   variable: "--font-nonbureau",
-  display: "swap",
+  display: "optional",
 });
 const geologica = localFont({
   src: "./fonts/Geologica.ttf",
   variable: "--font-geologica",
-  display: "swap",
+  display: "optional",
 });
 
 export const metadata: Metadata = {
