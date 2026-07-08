@@ -18,7 +18,8 @@ export function ProjectDetail({ id }: { id: number }) {
   const { t } = useLang();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isUploading, setIsUploading] = useState(false); // upload state
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
 
   // admin state
   const [panelOpen, setPanelOpen] = useState(false);
@@ -77,21 +78,36 @@ export function ProjectDetail({ id }: { id: number }) {
     patch({ gallery: newGallery });
   }
 
+  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
+    if (!file) return;
+    setCoverUploading(true);
+    const url = await sbUploadImage(file, "covers");
+    setCoverUploading(false);
+    if (!url) {
+      alert("Не удалось загрузить обложку. Проверьте, что вы авторизованы, и размер файла до 5MB.");
+      return;
+    }
+    patch({ image: url });
+  }
+
   async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
-    if (!files || !project) return;
-    setIsUploading(true);
-
-    const newGallery = [...(project.gallery || [])];
+    e.target.value = "";
+    if (!files || files.length === 0 || !project) return;
+    setGalleryUploading(true);
+    const uploaded: string[] = [];
     for (const file of Array.from(files)) {
-        if (newGallery.length >= 30) break;
-        const publicUrl = await sbUploadImage(file);
-        if (publicUrl) {
-            newGallery.push(publicUrl);
-        }
+      const url = await sbUploadImage(file, "gallery");
+      if (url) uploaded.push(url);
     }
-    patch({ gallery: newGallery });
-    setIsUploading(false);
+    setGalleryUploading(false);
+    if (uploaded.length === 0) {
+      alert("Не удалось загрузить картинки. Проверьте, что вы авторизованы, и размер файла до 5MB.");
+      return;
+    }
+    patch({ gallery: [...(project.gallery || []), ...uploaded] });
   }
 
   if (!loading && !project) {
@@ -211,6 +227,16 @@ export function ProjectDetail({ id }: { id: number }) {
               value={project?.image ?? ""}
               onChange={(e) => patch({ image: e.target.value || null })}
             />
+            <label className="admin-btn admin-upload-btn">
+              {coverUploading ? "…" : t("project_cover_upload")}
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                disabled={coverUploading}
+                onChange={handleCoverUpload}
+              />
+            </label>
           </div>
           <div className="admin-row">
             <label>Галерея:</label>
@@ -222,6 +248,17 @@ export function ProjectDetail({ id }: { id: number }) {
                     </div>
                 ))}
             </div>
+            <label className="admin-btn admin-upload-btn">
+              {galleryUploading ? "…" : t("project_gallery_upload")}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                style={{ display: "none" }}
+                disabled={galleryUploading}
+                onChange={handleGalleryUpload}
+              />
+            </label>
           </div>
           <div className="admin-row">
             <textarea

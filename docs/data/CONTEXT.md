@@ -19,11 +19,22 @@ just can't use the admin panel.
 
 ## Supabase tables
 
-- `projects`: `id`, `title`, `meta`, `category`, `image`, `description`,
+- `projects`: `id`, `title`, `meta`, `category`, `image` (cover URL), `gallery`
+  (`text[]` — extra image URLs shown on the project page), `description`,
   `link?`, `sort_order?`, `updated_at`. `category` is one of the `CATEGORIES`
   values in `src/data/site.ts` (`3d web branding art ai type motion`).
 - `laboratory`: single row `id = 1`, `content`, `updated_at`.
 - `contacts`: `id`, `label`, `url`, `sort_order?`.
+
+## Storage
+
+- Public bucket `images` (5MB limit, image mime types only). Public read;
+  writes (insert/update/delete) require an authenticated session — same admin
+  user as everything else.
+- `sbUploadImage(file, folder)` in `src/lib/supabase.ts` uploads to
+  `covers/` or `gallery/` inside that bucket and returns the public URL. Used
+  by `ProjectDetail`'s admin panel for the cover-image and gallery upload
+  buttons (actual `<input type="file">`, not manual URL pasting).
 
 Row-level security gates **writes** to the admin user (`NEXT_PUBLIC_ADMIN_EMAIL`).
 The anon/publishable key is safe in the browser by design.

@@ -141,15 +141,21 @@ export async function sbUpdateContact(
 }
 
 // ---------- Uploads ----------
-export async function sbUploadImage(file: File, bucket: string = 'images'): Promise<string | null> {
+// Uploads a file to the public "images" bucket under `folder/` and returns
+// its public URL, or null on failure (caller shows an error to the user).
+export async function sbUploadImage(
+  file: File,
+  folder: "covers" | "gallery",
+): Promise<string | null> {
   if (!sb) return null;
-  const filePath = `uploads/${Date.now()}_${file.name}`;
-  const { error } = await sb.storage.from(bucket).upload(filePath, file);
-  if (error) {
-    console.error("sbUploadImage:", error.message);
+  const ext = file.name.split(".").pop() || "png";
+  const path = `${folder}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { error: uploadError } = await sb.storage.from("images").upload(path, file);
+  if (uploadError) {
+    console.error("sbUploadImage:", uploadError.message);
     return null;
   }
-  const { data } = sb.storage.from(bucket).getPublicUrl(filePath);
+  const { data } = sb.storage.from("images").getPublicUrl(path);
   return data.publicUrl;
 }
 
