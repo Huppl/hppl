@@ -275,16 +275,18 @@ ul.clean-list li:hover {
 
 .work-card-image {
   width: 100%;
-  aspect-ratio: 4 / 5;
-  max-height: 420px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .work-card-image img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
   display: block;
   filter: grayscale(1) contrast(1.05);
   transition: filter 0.3s ease;
@@ -768,8 +770,8 @@ ul.clean-list li:hover {
 }
 .gallery-grid img {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   border: 1px solid var(--line);
   filter: grayscale(1) contrast(1.05);
   transition: filter 0.3s ease;
@@ -800,8 +802,8 @@ ul.clean-list li:hover {
 }
 .admin-gallery-item img {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   border: 1px solid var(--line);
 }
 .admin-gallery-item .admin-delete {
@@ -876,8 +878,8 @@ ul.clean-list li:hover {
 
 .gallery-thumb-color img {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   display: block;
 }
 
@@ -897,7 +899,7 @@ ul.clean-list li:hover {
 .gallery-scroll-item img {
   width: 100%;
   max-height: 85vh;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -1101,7 +1103,7 @@ ul.clean-list li:hover {
   }
 
   .project-hero-image {
-    aspect-ratio: 4 / 3;
+    max-height: 60vh;
   }
 
   .project-details-panel {
