@@ -6,7 +6,7 @@
 
 image:
   repository: ghcr.io/huppl/hppl
-  tag: "b92d69bb172a"
+  tag: "fe42dc3e4e9d"
   pullPolicy: IfNotPresent
 
 replicaCount: 1
