@@ -102,6 +102,8 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     admin_error_create_contact: "Не удалось создать контакт в Supabase. Проверьте, что вы авторизованы.",
     admin_toggle_title: "Открыть панель админа",
     admin_delete_title: "Удалить",
+    admin_access_denied: "Доступ запрещён. Войдите как администратор.",
+    admin_auth_retry: "Войти",
     contact_fallback: "Контакт",
   },
   en: {
@@ -204,6 +206,8 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     admin_error_create_contact: "Failed to create contact in Supabase. Make sure you are authenticated.",
     admin_toggle_title: "Open admin panel",
     admin_delete_title: "Delete",
+    admin_access_denied: "Access denied. Sign in as admin.",
+    admin_auth_retry: "Sign in",
     contact_fallback: "Contact",
   },
 };

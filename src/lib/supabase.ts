@@ -17,15 +17,46 @@ export const sb: SupabaseClient | null =
 export const supabaseEnabled = sb !== null;
 
 // ---------- Storage (image uploads) ----------
+
+/**
+ * Convert an image File to WebP using the browser Canvas API.
+ * Quality ~82%, returns a Blob or null on failure.
+ */
+async function convertToWebP(file: File, quality = 0.82): Promise<Blob | null> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement("canvas");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(bitmap, 0, 0);
+    return new Promise((resolve) => {
+      canvas.toBlob(
+        (blob) => resolve(blob),
+        "image/webp",
+        quality,
+      );
+    });
+  } catch {
+    return null;
+  }
+}
+
 export async function sbUploadImage(
   file: File,
   folder: "covers" | "gallery",
 ): Promise<string | null> {
   if (!sb) return null;
-  const ext = file.name.split(".").pop() ?? "jpg";
-  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await sb.storage.from("images").upload(path, file, {
-    contentType: file.type || "image/jpeg",
+
+  // Convert to WebP on the client before uploading
+  const webpBlob = await convertToWebP(file);
+  const uploadBlob: Blob = webpBlob ?? file;
+  const isWebP = webpBlob !== null;
+
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;
+  const { error } = await sb.storage.from("images").upload(path, uploadBlob, {
+    contentType: isWebP ? "image/webp" : file.type || "image/jpeg",
     upsert: false,
   });
   if (error) {
