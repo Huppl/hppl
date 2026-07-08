@@ -49,14 +49,31 @@ export async function sbUploadImage(
 ): Promise<string | null> {
   if (!sb) return null;
 
-  // Convert to WebP on the client before uploading
-  const webpBlob = await convertToWebP(file);
-  const uploadBlob: Blob = webpBlob ?? file;
-  const isWebP = webpBlob !== null;
+  const isVideo = file.type.startsWith("video/");
+  const isGif = file.type === "image/gif";
 
-  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;
+  // Convert images (except GIF) to WebP on the client before uploading
+  let uploadBlob: Blob = file;
+  let ext = "webp";
+  let contentType = file.type || "image/jpeg";
+
+  if (isVideo) {
+    ext = file.name.split(".").pop() || "mp4";
+    contentType = file.type || `video/${ext}`;
+  } else if (isGif) {
+    ext = "gif";
+    contentType = "image/gif";
+  } else {
+    const webpBlob = await convertToWebP(file);
+    if (webpBlob) {
+      uploadBlob = webpBlob;
+      contentType = "image/webp";
+    }
+  }
+
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const { error } = await sb.storage.from("images").upload(path, uploadBlob, {
-    contentType: isWebP ? "image/webp" : file.type || "image/jpeg",
+    contentType,
     upsert: false,
   });
   if (error) {

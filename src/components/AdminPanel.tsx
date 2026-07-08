@@ -5,6 +5,7 @@ import { useLang } from "@/lib/i18n";
 import { useProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
 import type { CategoryValue, Contact } from "@/lib/types";
+import { MediaPreview } from "@/components/MediaPreview";
 import {
   sbDeleteContact,
   sbDeleteProject,
@@ -265,7 +266,7 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
                     {uploadingId === p.id ? t("admin_uploading") : t("admin_upload_cover")}
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/*,video/mp4,video/webm"
                       style={{ display: "none" }}
                       onChange={(e) => {
                         const f = e.target.files?.[0];
@@ -280,7 +281,11 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
                       <div className="admin-gallery-grid">
                         {p.gallery?.map((img, i) => (
                           <div key={i} className="admin-gallery-item">
-                            <img src={img} alt={`${p.title} ${i + 1}`} />
+                            <MediaPreview
+                              src={img}
+                              alt={`${p.title} ${i + 1}`}
+                              videoClassName="media-preview-video media-preview-admin"
+                            />
                             <button
                               className="admin-delete"
                               title={t("admin_remove_image")}
@@ -297,7 +302,7 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
                     {galleryUploadingId === p.id ? t("admin_uploading") : t("admin_upload_gallery")}
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/*,video/mp4,video/webm"
                       multiple
                       style={{ display: "none" }}
                       onChange={(e) => {

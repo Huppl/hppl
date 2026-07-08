@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useLang } from "@/lib/i18n";
 import { useProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
+import { MediaPreview } from "@/components/MediaPreview";
 
 // Works: filterable grid. The filter bar is fixed and fades in only while the
 // Works section is on screen (IntersectionObserver, as in the original).
@@ -54,7 +55,10 @@ export function Works() {
             >
               <div className="work-card-image">
                 {p.image ? (
-                  <img src={p.image} alt={`${p.title || "Project"} preview`} />
+                  <MediaPreview
+                    src={p.image}
+                    alt={`${p.title || "Project"} preview`}
+                  />
                 ) : null}
               </div>
               <span className="work-index">

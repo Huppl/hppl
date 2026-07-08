@@ -86,7 +86,7 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     admin_confirm_reset: "Сбросить все правки и вернуть исходный список проектов?",
 
     admin_upload_cover: "Загрузить обложку",
-    admin_upload_gallery: "Загрузить картинки",
+    admin_upload_gallery: "Загрузить изображения / видео",
     admin_uploading: "Загрузка...",
     admin_upload_error: "Ошибка загрузки изображения",
     admin_remove_image: "Убрать",
@@ -190,7 +190,7 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     admin_confirm_reset: "Reset all changes and return to the original project list?",
 
     admin_upload_cover: "Upload cover",
-    admin_upload_gallery: "Upload images",
+    admin_upload_gallery: "Upload images / video",
     admin_uploading: "Uploading...",
     admin_upload_error: "Image upload failed",
     admin_remove_image: "Remove",
