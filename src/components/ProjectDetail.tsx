@@ -6,6 +6,7 @@ import { loadProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
 import { Hud } from "@/components/Hud";
 import type { Project } from "@/lib/types";
+import { MediaPreview, isVideoUrl } from "@/components/MediaPreview";
 
 type ViewMode = "grid" | "scroll";
 
@@ -88,7 +89,11 @@ export function ProjectDetail({ id }: { id: number }) {
         </div>
         <div className="project-hero-image">
           {project?.image ? (
-            <img src={project.image} alt={`${project.title} preview`} />
+            <MediaPreview
+              src={project.image}
+              alt={`${project.title} preview`}
+              videoClassName="media-preview-video media-preview-hero"
+            />
           ) : null}
         </div>
       </section>
@@ -118,7 +123,11 @@ export function ProjectDetail({ id }: { id: number }) {
                   className="gallery-thumb-color"
                   onClick={() => setLightboxIndex(i)}
                 >
-                  <img src={img} alt={`${project?.title ?? "Project"} ${i + 1}`} />
+                  <MediaPreview
+                    src={img}
+                    alt={`${project?.title ?? "Project"} ${i + 1}`}
+                    videoClassName="media-preview-video media-preview-thumb"
+                  />
                 </div>
               ))}
             </div>
@@ -126,7 +135,12 @@ export function ProjectDetail({ id }: { id: number }) {
             <div className="gallery-scroll">
               {galleryImages.map((img, i) => (
                 <div key={i} className="gallery-scroll-item">
-                  <img src={img} alt={`${project?.title ?? "Project"} ${i + 1}`} style={{ objectFit: "contain" }} />
+                  <MediaPreview
+                    src={img}
+                    alt={`${project?.title ?? "Project"} ${i + 1}`}
+                    videoClassName="media-preview-video media-preview-scroll"
+                    style={{ objectFit: "contain" }}
+                  />
                 </div>
               ))}
             </div>
@@ -142,11 +156,24 @@ export function ProjectDetail({ id }: { id: number }) {
           >
             ‹
           </button>
-          <img
-            src={galleryImages[lightboxIndex]}
-            alt={`${project?.title ?? "Project"} ${lightboxIndex + 1}`}
-            onClick={(e) => e.stopPropagation()}
-          />
+          {isVideoUrl(galleryImages[lightboxIndex]) ? (
+            <video
+              className="lightbox-video"
+              src={galleryImages[lightboxIndex]}
+              onClick={(e) => e.stopPropagation()}
+              controls
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          ) : (
+            <img
+              src={galleryImages[lightboxIndex]}
+              alt={`${project?.title ?? "Project"} ${lightboxIndex + 1}`}
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
           <button
             className="lightbox-arrow lightbox-next"
             onClick={(e) => { e.stopPropagation(); nextImage(); }}
