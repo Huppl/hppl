@@ -6,7 +6,7 @@ import { loadProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
 import { Hud } from "@/components/Hud";
 import type { CategoryValue, Project } from "@/lib/types";
-import { sbIsAuthenticated, sbSignIn, sbUpdateProject } from "@/lib/supabase";
+import { sbIsAuthenticated, sbSignIn, sbUpdateProject, sbUploadImage } from "@/lib/supabase";
 
 function categoryLabel(t: (k: string) => string, value?: string) {
   const c = CATEGORIES.find((x) => x.value === value);
@@ -25,6 +25,8 @@ export function ProjectDetail({ id }: { id: number }) {
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   const [authBusy, setAuthBusy] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
 
   useEffect(() => {
     loadProjects()
@@ -58,9 +60,40 @@ export function ProjectDetail({ id }: { id: number }) {
       meta: project.meta,
       category: project.category,
       image: project.image,
+      gallery: project.gallery ?? [],
       description: project.description,
     });
-    alert(ok ? t("project_saved") : "Ошибка сохранения в Supabase — проверьте, что вы авторизованы.");
+    alert(ok ? t("project_saved") : t("admin_error_save"));
+  }
+
+  async function handleCoverUpload(file: File) {
+    if (!project) return;
+    setCoverUploading(true);
+    const url = await sbUploadImage(file, "covers");
+    setCoverUploading(false);
+    if (url) patch({ image: url });
+    else alert(t("admin_upload_error"));
+  }
+
+  async function handleGalleryUpload(files: FileList) {
+    if (!project) return;
+    setGalleryUploading(true);
+    const urls: string[] = [];
+    for (const file of Array.from(files)) {
+      const url = await sbUploadImage(file, "gallery");
+      if (url) urls.push(url);
+    }
+    setGalleryUploading(false);
+    if (urls.length === 0) {
+      alert(t("admin_upload_error"));
+      return;
+    }
+    patch({ gallery: [...(project.gallery ?? []), ...urls] });
+  }
+
+  function removeGalleryImage(index: number) {
+    if (!project?.gallery) return;
+    patch({ gallery: project.gallery.filter((_, i) => i !== index) });
   }
 
   function patch(fields: Partial<Project>) {
@@ -105,6 +138,17 @@ export function ProjectDetail({ id }: { id: number }) {
           ) : null}
         </div>
       </section>
+
+      {project?.gallery && project.gallery.length > 0 ? (
+        <section className="simple-section project-gallery">
+          <span className="section-index">{t("gallery_title")}</span>
+          <div className="gallery-grid">
+            {project.gallery.map((img, i) => (
+              <img key={i} src={img} alt={`${project.title} ${i + 1}`} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="simple-section project-details-panel">
         <span className="section-index">{t("project_details")}</span>
@@ -182,8 +226,49 @@ export function ProjectDetail({ id }: { id: number }) {
               className="admin-field"
               placeholder={t("project_image_placeholder")}
               value={project?.image ?? ""}
-              onChange={(e) => patch({ image: e.target.value || null })}
+              onChange={(e) => patch({ image: e.target.value || "" })}
             />
+            <label className="admin-btn admin-upload-label">
+              {coverUploading ? t("admin_uploading") : t("admin_upload_cover")}
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleCoverUpload(f);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          </div>
+          <div className="admin-row admin-gallery-section">
+            <span className="admin-sublabel">{t("gallery_title")}</span>
+            {(project?.gallery ?? []).map((img, i) => (
+              <div key={i} className="admin-gallery-item">
+                <img src={img} alt="" />
+                <button
+                  className="admin-delete"
+                  title={t("admin_delete_title")}
+                  onClick={() => removeGalleryImage(i)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            <label className="admin-btn admin-upload-label">
+              {galleryUploading ? t("admin_uploading") : t("admin_upload_gallery")}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  if (e.target.files && e.target.files.length > 0) handleGalleryUpload(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </label>
           </div>
           <div className="admin-row">
             <textarea

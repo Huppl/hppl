@@ -754,3 +754,317 @@ ul.clean-list li:hover {
   font-size: 0.9rem;
   padding: 12px;
 }
+
+/* ---------- Gallery (project detail) ---------- */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.gallery-grid img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  filter: grayscale(1) contrast(1.05);
+  transition: filter 0.3s ease;
+}
+.gallery-grid img:hover {
+  filter: grayscale(0) contrast(1);
+}
+
+.admin-gallery-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.admin-sublabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.admin-gallery-item {
+  position: relative;
+  width: 100%;
+}
+.admin-gallery-item img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--line);
+}
+.admin-gallery-item .admin-delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--bg);
+  padding: 4px 8px;
+  font-size: 0.75rem;
+}
+.admin-upload-label {
+  display: inline-block;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* ---------- Mobile nav (hamburger) ---------- */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 1rem;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-family: var(--font-nonbureau), monospace;
+}
+.nav-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ============================================================
+   Responsive breakpoints
+   ============================================================ */
+
+/* ---- Tablet (≤1024px) ---- */
+@media (max-width: 1024px) {
+  .work-board {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    padding: 32px 24px;
+    margin: 120px auto 60px;
+  }
+
+  .ui-layer {
+    padding: 24px;
+  }
+
+  .simple-section {
+    padding: 100px 24px;
+  }
+
+  .project-page {
+    padding: 140px 24px 60px;
+  }
+
+  .circle-1 {
+    width: 60vh;
+    height: 60vh;
+  }
+  .circle-2 {
+    width: 90vh;
+    height: 90vh;
+  }
+}
+
+/* ---- Mobile (≤768px) ---- */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  .simple-section h2 {
+    font-size: 2rem;
+  }
+
+  .ui-layer {
+    padding: 16px;
+    font-size: 0.7rem;
+  }
+
+  .ui-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Hamburger nav on mobile */
+  .nav-toggle {
+    display: inline-block;
+  }
+
+  .ui-block .clean-list.nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    padding: 16px;
+    z-index: 30;
+    min-width: 160px;
+  }
+
+  .ui-block .clean-list.nav-links.is-open {
+    display: block;
+  }
+
+  .ui-block .clean-list.nav-links li {
+    margin-bottom: 12px;
+  }
+
+  .work-board {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 24px 16px;
+    margin: 100px auto 40px;
+  }
+
+  .filter-bar {
+    top: 72px;
+    max-width: calc(100% - 32px);
+    padding: 12px 12px;
+    gap: 8px;
+  }
+
+  .filter-button {
+    padding: 8px 14px;
+    font-size: 0.75rem;
+  }
+
+  .simple-section {
+    min-height: auto;
+    padding: 80px 16px;
+  }
+
+  .project-page {
+    padding: 120px 16px 40px;
+    gap: 24px;
+  }
+
+  .project-hero-image {
+    aspect-ratio: 4 / 3;
+  }
+
+  .project-details-panel {
+    padding: 60px 16px;
+  }
+
+  .circle-1 {
+    width: 50vh;
+    height: 50vh;
+  }
+  .circle-2 {
+    width: 70vh;
+    height: 70vh;
+  }
+
+  /* Admin panel: full-width on mobile */
+  .admin-panel {
+    width: 100vw;
+    padding: 20px 16px;
+  }
+
+  .admin-toggle {
+    right: 16px;
+    bottom: 16px;
+    padding: 12px 16px;
+    font-size: 0.7rem;
+    min-height: 44px;
+  }
+
+  .admin-auth-modal {
+    padding: 24px 20px;
+  }
+
+  .admin-tab-btn {
+    padding: 10px 12px;
+    font-size: 0.65rem;
+    min-height: 44px;
+  }
+
+  .admin-btn {
+    padding: 12px 16px;
+    font-size: 0.7rem;
+    min-height: 44px;
+  }
+
+  .admin-field,
+  .admin-textarea {
+    padding: 12px;
+    font-size: 0.85rem;
+    min-height: 44px;
+  }
+
+  .admin-password {
+    padding: 12px;
+    min-height: 44px;
+  }
+
+  .admin-delete {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+}
+
+/* ---- Small mobile (≤480px) ---- */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  .simple-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .ui-layer {
+    padding: 12px;
+    font-size: 0.65rem;
+  }
+
+  .work-board {
+    padding: 16px 12px;
+    gap: 16px;
+  }
+
+  .work-card {
+    padding: 16px;
+    min-height: 140px;
+  }
+
+  .work-card h2 {
+    font-size: 1.1rem;
+  }
+
+  .filter-bar {
+    top: 64px;
+    padding: 10px;
+    gap: 6px;
+  }
+
+  .filter-button {
+    padding: 8px 10px;
+    font-size: 0.7rem;
+  }
+
+  .simple-section {
+    padding: 60px 12px;
+  }
+
+  .project-page {
+    padding: 100px 12px 32px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .admin-panel {
+    padding: 16px 12px;
+  }
+
+  .admin-auth-modal {
+    width: calc(100vw - 24px);
+    padding: 20px 16px;
+  }
+}

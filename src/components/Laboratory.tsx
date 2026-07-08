@@ -18,7 +18,7 @@ export function Laboratory() {
   }, []);
 
   return (
-    <section id="laboratory" className="simple-section">
+    <section id="about" className="simple-section">
       <span className="section-index">{t("lab_04")}</span>
       <h2>{t("laboratory_title")}</h2>
       <p>{content || t("laboratory_studying")}</p>

@@ -1,6 +1,6 @@
 # CONTEXT — Deployment
 
-How the site gets from a `git push` to `https://hhppll.online`.
+How the site gets from a GitHub Release to `https://hhppll.online`.
 
 > Update this file when you change the Dockerfile, Helm chart, CI, or any cluster
 > assumption.
@@ -8,16 +8,25 @@ How the site gets from a `git push` to `https://hhppll.online`.
 ## The pipeline
 
 ```
-push to main
-  → GitHub Actions (.github/workflows/deploy.yml)
-      builds Docker image → ghcr.io/huppl/hppl:<sha> (+ :latest)
-      bumps image.tag in k8s/helm/hppl/values.yaml, commits back [skip ci]
-  → ArgoCD (app "hppl") sees the values change, syncs
-  → K3s runs the Deployment; Service (ClusterIP :80 → :3000)
-  → Traefik IngressRoute serves it at https://hhppll.online (Let's Encrypt)
+feature branch → Pull Request → merge to main
+  → create GitHub Release (tag vX.Y.Z)
+    → GitHub Actions (.github/workflows/deploy.yml)
+        builds Docker image → ghcr.io/huppl/hppl:<tag> (+ :latest)
+        bumps image.tag in k8s/helm/hppl/values.yaml, commits back [skip ci]
+    → ArgoCD (app "hppl") sees the values change, syncs
+    → K3s runs the Deployment; Service (ClusterIP :80 → :3000)
+    → Traefik IngressRoute serves it at https://hhppll.online (Let's Encrypt)
 ```
 
-Everyday deploys: **just push to `main`.** Everything else is automatic.
+Everyday deploys: **create a GitHub Release** with a semver tag (`v1.2.3`).
+Everything else is automatic. PRs to `main` are gated by `ci.yml` (lint + build).
+
+## Branch protection
+
+`main` is protected:
+- No direct pushes — only through Pull Request.
+- CI check (`ci.yml` → `build` job) must pass before merge.
+- No force-push allowed.
 
 ## The VPS (context)
 
@@ -39,7 +48,8 @@ Everyday deploys: **just push to `main`.** Everything else is automatic.
 | `.env.production` | publishable `NEXT_PUBLIC_` values, baked in at build time |
 | `k8s/helm/hppl/` | Helm chart: Deployment, Service, Traefik IngressRoute |
 | `k8s/argocd/application.yaml` | the ArgoCD Application (apply once) |
-| `.github/workflows/deploy.yml` | build + push + tag-bump |
+| `.github/workflows/deploy.yml` | build + push + tag-bump (on release) |
+| `.github/workflows/ci.yml` | lint + build gate (on pull request) |
 
 ## One-time bootstrap
 

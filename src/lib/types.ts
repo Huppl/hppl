@@ -16,8 +16,10 @@ export interface Project {
   meta: string; // short line, e.g. "// Branding // 2026"
   category: CategoryValue;
   image: string | null; // path or URL; null → framed placeholder
+  gallery?: string[] | null; // array of image URLs (Supabase Storage)
   description: string;
   link?: string | null; // legacy; routing now uses /project/<id>
+  external_url?: string | null;
   sort_order?: number | null;
 }
 

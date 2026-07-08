@@ -59,12 +59,16 @@ k8s/, Dockerfile, .github/  deployment
 
 ## Deploying
 
-Push to `main`. CI builds the image and ArgoCD ships it to `https://hhppll.online`
-automatically. Details + one-time setup in `docs/deployment/CONTEXT.md`. Don't
-invent a new deploy mechanism.
+Create a GitHub Release (tag `vX.Y.Z`). CI builds the image and ArgoCD ships it
+to `https://hhppll.online` automatically. Never push directly to `main` — all
+changes go through a Pull Request. Details + one-time setup in
+`docs/deployment/CONTEXT.md`. Don't invent a new deploy mechanism.
 
 ## Don't
 
 - Don't touch `legacy/` expecting it to run — it's a reference snapshot.
 - Don't add a dependency for something a few lines or the platform already does.
 - Don't leave `CONTEXT.md` docs stale after a change.
+- **Never use `git push --force`** — this has already wiped history twice.
+- **Never recreate `.git`** — always `git clone` / `git pull`.
+- **Never push directly to `main`** — use a feature branch + Pull Request.

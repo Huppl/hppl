@@ -31,7 +31,7 @@ export function Contact() {
             href={c.url || "#"}
             style={{ display: "block", marginTop: 10 }}
           >
-            {c.label || "Контакт"}
+            {c.label || t("contact_fallback")}
           </a>
         ))}
       </div>
