@@ -21,7 +21,7 @@ export function Laboratory() {
     <section id="about" className="simple-section">
       <span className="section-index">{t("lab_04")}</span>
       <h2>{t("laboratory_title")}</h2>
-      <p>{content || t("laboratory_studying")}</p>
+      <p style={{ whiteSpace: "pre-line" }}>{content || t("laboratory_studying")}</p>
     </section>
   );
 }
