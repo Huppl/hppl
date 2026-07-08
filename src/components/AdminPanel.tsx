@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { useProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
@@ -25,12 +25,12 @@ type Tab = "projects" | "laboratory" | "contact";
 // General admin panel: sign in with the Supabase admin user, then edit projects,
 // the Laboratory line, and contact links. Writes go straight to Supabase; the
 // static fallback in src/data/projects.ts is updated via "Export code".
-export function AdminPanel() {
+export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
   const { t } = useLang();
   const { projects, setProjects, reload } = useProjects();
 
-  const [panelOpen, setPanelOpen] = useState(false);
-  const [authOpen, setAuthOpen] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(autoOpen);
+  const [authOpen, setAuthOpen] = useState(!autoOpen);
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   const [authBusy, setAuthBusy] = useState(false);
@@ -42,18 +42,20 @@ export function AdminPanel() {
 
   async function openPanel() {
     setPanelOpen(true);
+    setAuthOpen(false);
     const [lab, list] = await Promise.all([sbFetchLaboratory(), sbFetchContacts()]);
     setLabText(lab.content || "");
     setContacts(list);
   }
 
-  async function handleToggle() {
-    if (await sbIsAuthenticated()) {
-      openPanel();
-    } else {
-      setAuthOpen(true);
+  // If autoOpen, sign-in success opens the panel directly
+  useEffect(() => {
+    if (autoOpen && authOpen) {
+      sbIsAuthenticated().then((authed) => {
+        if (authed) openPanel();
+      });
     }
-  }
+  }, [autoOpen, authOpen]);
 
   async function handleSignIn() {
     setAuthBusy(true);
@@ -147,14 +149,6 @@ export function AdminPanel() {
 
   return (
     <>
-      <button
-        className="admin-toggle"
-        title={t("admin_toggle_title")}
-        onClick={handleToggle}
-      >
-        ADMIN
-      </button>
-
       {/* Auth modal */}
       <div className={`admin-auth${authOpen ? " is-open" : ""}`}>
         <div className="admin-auth-modal">
