@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
 import { loadProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
 import { Hud } from "@/components/Hud";
 import type { CategoryValue, Project } from "@/lib/types";
 import { sbIsAuthenticated, sbSignIn, sbUpdateProject, sbUploadImage } from "@/lib/supabase";
+
+type ViewMode = "grid" | "scroll";
 
 function categoryLabel(t: (k: string) => string, value?: string) {
   const c = CATEGORIES.find((x) => x.value === value);
@@ -27,6 +29,34 @@ export function ProjectDetail({ id }: { id: number }) {
   const [authBusy, setAuthBusy] = useState(false);
   const [coverUploading, setCoverUploading] = useState(false);
   const [galleryUploading, setGalleryUploading] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const galleryImages: string[] = [
+    ...(project?.image ? [project.image] : []),
+    ...(project?.gallery ?? []),
+  ];
+
+  const closeLightbox = useCallback(() => setLightboxIndex(null), []);
+  const nextImage = useCallback(
+    () => setLightboxIndex((i) => (i === null ? null : (i + 1) % galleryImages.length)),
+    [galleryImages.length],
+  );
+  const prevImage = useCallback(
+    () => setLightboxIndex((i) => (i === null ? null : (i - 1 + galleryImages.length) % galleryImages.length)),
+    [galleryImages.length],
+  );
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") nextImage();
+      if (e.key === "ArrowLeft") prevImage();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [lightboxIndex, closeLightbox, nextImage, prevImage]);
 
   useEffect(() => {
     loadProjects()
@@ -139,15 +169,76 @@ export function ProjectDetail({ id }: { id: number }) {
         </div>
       </section>
 
-      {project?.gallery && project.gallery.length > 0 ? (
-        <section className="simple-section project-gallery">
-          <span className="section-index">{t("gallery_title")}</span>
-          <div className="gallery-grid">
-            {project.gallery.map((img, i) => (
-              <img key={i} src={img} alt={`${project.title} ${i + 1}`} />
-            ))}
+      {galleryImages.length > 0 ? (
+        <section className="project-gallery-section">
+          <div className="gallery-mode-toggle">
+            <button
+              className={`gallery-mode-btn${viewMode === "grid" ? " active" : ""}`}
+              onClick={() => setViewMode("grid")}
+            >
+              {t("gallery_grid")}
+            </button>
+            <button
+              className={`gallery-mode-btn${viewMode === "scroll" ? " active" : ""}`}
+              onClick={() => setViewMode("scroll")}
+            >
+              {t("gallery_scroll")}
+            </button>
           </div>
+
+          {viewMode === "grid" ? (
+            <div className="gallery-grid-color">
+              {galleryImages.map((img, i) => (
+                <div
+                  key={i}
+                  className="gallery-thumb-color"
+                  onClick={() => setLightboxIndex(i)}
+                >
+                  <img src={img} alt={`${project?.title ?? "Project"} ${i + 1}`} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="gallery-scroll">
+              {galleryImages.map((img, i) => (
+                <div key={i} className="gallery-scroll-item">
+                  <img src={img} alt={`${project?.title ?? "Project"} ${i + 1}`} />
+                </div>
+              ))}
+            </div>
+          )}
         </section>
+      ) : null}
+
+      {lightboxIndex !== null && galleryImages[lightboxIndex] ? (
+        <div className="lightbox" onClick={closeLightbox}>
+          <button
+            className="lightbox-arrow lightbox-prev"
+            onClick={(e) => { e.stopPropagation(); prevImage(); }}
+          >
+            ‹
+          </button>
+          <img
+            src={galleryImages[lightboxIndex]}
+            alt={`${project?.title ?? "Project"} ${lightboxIndex + 1}`}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            className="lightbox-arrow lightbox-next"
+            onClick={(e) => { e.stopPropagation(); nextImage(); }}
+          >
+            ›
+          </button>
+          <span className="lightbox-counter">
+            {lightboxIndex + 1} / {galleryImages.length}
+          </span>
+          <button
+            className="lightbox-close"
+            onClick={closeLightbox}
+          >
+            ×
+          </button>
+        </div>
       ) : null}
 
       <section className="simple-section project-details-panel">
