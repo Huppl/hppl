@@ -91,6 +91,8 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     admin_upload_error: "Ошибка загрузки изображения",
     admin_remove_image: "Убрать",
     gallery_title: "Галерея",
+    gallery_grid: "Плитки",
+    gallery_scroll: "Скролл",
 
     admin_error_delete_project: "Не удалось удалить проект в Supabase.",
     admin_error_create_project: "Не удалось создать проект в Supabase. Проверьте, что вы авторизованы.",
@@ -191,6 +193,8 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     admin_upload_error: "Image upload failed",
     admin_remove_image: "Remove",
     gallery_title: "Gallery",
+    gallery_grid: "Grid",
+    gallery_scroll: "Scroll",
 
     admin_error_delete_project: "Failed to delete project in Supabase.",
     admin_error_create_project: "Failed to create project in Supabase. Make sure you are authenticated.",
