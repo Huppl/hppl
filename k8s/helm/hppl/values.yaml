@@ -6,7 +6,7 @@
 
 image:
   repository: ghcr.io/huppl/hppl
-  tag: "v1.7.1"
+  tag: "v1.8.0"
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -28,5 +28,5 @@ resources:
     memory: 256Mi
 
 # Add here only if the ghcr package is PRIVATE (e.g. name: ghcr-pull).
-# Public package → leave empty, no secret needed.
+# Public package в†’ leave empty, no secret needed.
 imagePullSecrets: []
