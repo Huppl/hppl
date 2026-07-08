@@ -42,7 +42,7 @@ function fileToPending(file: File): PendingFile {
   };
 }
 
-export function AdminPanel({ autoOpen = false, requestOpen }: { autoOpen?: boolean; requestOpen?: boolean }) {
+export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
   const { t } = useLang();
   const { projects, setProjects, reload } = useProjects();
 
@@ -77,13 +77,6 @@ export function AdminPanel({ autoOpen = false, requestOpen }: { autoOpen?: boole
       });
     }
   }, [autoOpen, authOpen]);
-
-  useEffect(() => {
-    if (requestOpen) {
-      setPanelOpen(true);
-      setAuthOpen(true);
-    }
-  }, [requestOpen]);
 
   useEffect(() => {
     return () => {
