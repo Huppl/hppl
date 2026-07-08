@@ -20,7 +20,14 @@ body {
   background-color: var(--bg);
   color: var(--text);
   font-family: var(--font-neutral), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
   position: relative;
+}
+
+p {
+  letter-spacing: 0.02em;
+  line-height: 1.6;
 }
 
 /* ---------- Hero ---------- */
@@ -210,15 +217,15 @@ ul.clean-list li:hover {
   grid-auto-rows: min-content;
   gap: 32px;
   width: min(100%, 1400px);
-  margin: 160px auto 80px;
+  margin: 16px auto 80px;
   padding: 40px;
 }
 
 .filter-bar {
-  position: fixed;
-  top: 88px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-16px);
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -227,16 +234,15 @@ ul.clean-list li:hover {
   border-bottom: 1px solid var(--line);
   padding: 16px 20px;
   z-index: 101;
-  max-width: calc(100% - 80px);
+  max-width: 100%;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition: opacity 0.4s ease;
 }
 
 .filter-bar.is-visible {
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
 }
 
 .filter-button {
@@ -290,16 +296,6 @@ ul.clean-list li:hover {
   display: block;
   filter: grayscale(1) contrast(1.05);
   transition: filter 0.3s ease;
-}
-
-.work-card-natural {
-  max-width: none;
-}
-.work-card-natural .work-card-image img {
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  object-fit: contain;
 }
 
 .media-preview-video {
@@ -713,6 +709,48 @@ ul.clean-list li:hover {
 .admin-textarea:focus,
 .admin-password:focus {
   outline: none;
+  border-color: var(--accent);
+}
+
+.admin-tags-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+}
+
+.admin-tag-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-family: var(--font-nonbureau), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.admin-tag-option input[type="checkbox"] {
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+}
+
+.admin-tag-option.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.admin-tag-option.active input[type="checkbox"] {
+  background: var(--accent);
   border-color: var(--accent);
 }
 

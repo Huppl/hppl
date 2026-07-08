@@ -14,7 +14,8 @@ export interface Project {
   id: number;
   title: string;
   meta: string; // short line, e.g. "// Branding // 2026"
-  category: CategoryValue;
+  category: CategoryValue; // legacy single tag
+  tags?: CategoryValue[]; // multiple tags (preferred)
   image: string | null; // path or URL; null → framed placeholder
   gallery?: string[] | null; // array of image URLs (Supabase Storage)
   description: string;
