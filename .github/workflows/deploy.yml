@@ -36,8 +36,8 @@ jobs:
           tags: |
             ghcr.io/huppl/hppl:latest
             ghcr.io/huppl/hppl:${{ github.event.release.tag_name }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=v2
+          cache-to: type=gha,mode=max,scope=v2
 
       - name: Bump image tag in Helm values
         env:
