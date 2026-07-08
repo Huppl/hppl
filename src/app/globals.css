@@ -783,6 +783,11 @@ ul.clean-list li:hover {
   flex-direction: column;
   gap: 10px;
 }
+.admin-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
 .admin-sublabel {
   font-size: 0.7rem;
   letter-spacing: 0.15em;

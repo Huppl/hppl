@@ -39,6 +39,7 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [exportOutput, setExportOutput] = useState("");
   const [uploadingId, setUploadingId] = useState<number | null>(null);
+  const [galleryUploadingId, setGalleryUploadingId] = useState<number | null>(null);
 
   async function openPanel() {
     setPanelOpen(true);
@@ -91,6 +92,26 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
     setUploadingId(null);
     if (url) patchProject(id, { image: url });
     else alert(t("admin_upload_error"));
+  }
+
+  async function uploadGalleryImage(id: number, file: File) {
+    setGalleryUploadingId(id);
+    const url = await sbUploadImage(file, "gallery");
+    setGalleryUploadingId(null);
+    if (url) {
+      const current = projects.find((p) => p.id === id);
+      const gallery = [...(current?.gallery ?? []), url];
+      patchProject(id, { gallery });
+    } else {
+      alert(t("admin_upload_error"));
+    }
+  }
+
+  async function removeGalleryImage(id: number, index: number) {
+    const current = projects.find((p) => p.id === id);
+    if (!current?.gallery) return;
+    const gallery = current.gallery.filter((_, i) => i !== index);
+    patchProject(id, { gallery });
   }
 
   async function addProject() {
@@ -249,6 +270,41 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
                       onChange={(e) => {
                         const f = e.target.files?.[0];
                         if (f) uploadCover(p.id, f);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  {(p.gallery?.length ?? 0) > 0 ? (
+                    <div className="admin-gallery-section">
+                      <span className="admin-sublabel">{t("gallery_title")}</span>
+                      <div className="admin-gallery-grid">
+                        {p.gallery?.map((img, i) => (
+                          <div key={i} className="admin-gallery-item">
+                            <img src={img} alt={`${p.title} ${i + 1}`} />
+                            <button
+                              className="admin-delete"
+                              title={t("admin_remove_image")}
+                              onClick={() => removeGalleryImage(p.id, i)}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                  <label className="admin-btn admin-upload-label">
+                    {galleryUploadingId === p.id ? t("admin_uploading") : t("admin_upload_gallery")}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        const files = e.target.files;
+                        if (files) {
+                          Array.from(files).forEach((f) => uploadGalleryImage(p.id, f));
+                        }
                         e.target.value = "";
                       }}
                     />
