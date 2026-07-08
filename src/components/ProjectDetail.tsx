@@ -6,7 +6,7 @@ import { loadProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
 import { Hud } from "@/components/Hud";
 import type { Project } from "@/lib/types";
-import { MediaPreview, isVideoUrl } from "@/components/MediaPreview";
+import { MediaPreview, isVideoUrl, type NaturalSize } from "@/components/MediaPreview";
 
 type ViewMode = "grid" | "scroll";
 
@@ -15,13 +15,15 @@ function categoryLabel(t: (k: string) => string, value?: string) {
   return c ? t(c.i18nKey) : value || "";
 }
 
-// Project detail page + focused single-project admin (mirrors project.html).
+const MIN_GALLERY_CELL = 240;
+
 export function ProjectDetail({ id }: { id: number }) {
   const { t } = useLang();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [naturalSizes, setNaturalSizes] = useState<Record<number, NaturalSize>>({});
 
   const galleryImages: string[] = [
     ...(project?.image ? [project.image] : []),
@@ -54,6 +56,13 @@ export function ProjectDetail({ id }: { id: number }) {
       .then((list) => setProject(list.find((p) => p.id === id) ?? null))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const handleNaturalSize = useCallback((idx: number, size: NaturalSize) => {
+    setNaturalSizes((prev) => {
+      if (prev[idx]?.width === size.width && prev[idx]?.height === size.height) return prev;
+      return { ...prev, [idx]: size };
+    });
+  }, []);
 
   if (!loading && !project) {
     return (
@@ -117,19 +126,25 @@ export function ProjectDetail({ id }: { id: number }) {
 
           {viewMode === "grid" ? (
             <div className="gallery-grid-color">
-              {galleryImages.map((img, i) => (
-                <div
-                  key={i}
-                  className="gallery-thumb-color"
-                  onClick={() => setLightboxIndex(i)}
-                >
-                  <MediaPreview
-                    src={img}
-                    alt={`${project?.title ?? "Project"} ${i + 1}`}
-                    videoClassName="media-preview-video media-preview-thumb"
-                  />
-                </div>
-              ))}
+              {galleryImages.map((img, i) => {
+                const ns = naturalSizes[i];
+                const isSmall = ns && (ns.width < MIN_GALLERY_CELL || ns.height < MIN_GALLERY_CELL);
+                return (
+                  <div
+                    key={i}
+                    className={`gallery-thumb-color${isSmall ? " gallery-thumb-natural" : ""}`}
+                    style={isSmall && ns ? { maxWidth: Math.max(ns.width, 120) } : undefined}
+                    onClick={() => setLightboxIndex(i)}
+                  >
+                    <MediaPreview
+                      src={img}
+                      alt={`${project?.title ?? "Project"} ${i + 1}`}
+                      videoClassName="media-preview-video media-preview-thumb"
+                      onNaturalSize={(size) => handleNaturalSize(i, size)}
+                    />
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="gallery-scroll">
