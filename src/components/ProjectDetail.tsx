@@ -98,16 +98,18 @@ export function ProjectDetail({ id }: { id: number }) {
     if (!files || files.length === 0 || !project) return;
     setGalleryUploading(true);
     const uploaded: string[] = [];
+    const currentGallery = project.gallery || [];
     for (const file of Array.from(files)) {
+      if (currentGallery.length + uploaded.length >= 50) break;
       const url = await sbUploadImage(file, "gallery");
       if (url) uploaded.push(url);
     }
     setGalleryUploading(false);
     if (uploaded.length === 0) {
-      alert("Не удалось загрузить картинки. Проверьте, что вы авторизованы, и размер файла до 5MB.");
+      alert("Не удалось загрузить картинки (возможно превышен лимит 50 или ошибка). Проверьте, что вы авторизованы, и размер файла до 5MB.");
       return;
     }
-    patch({ gallery: [...(project.gallery || []), ...uploaded] });
+    patch({ gallery: [...currentGallery, ...uploaded] });
   }
 
   if (!loading && !project) {
