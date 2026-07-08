@@ -126,7 +126,7 @@ export function ProjectDetail({ id }: { id: number }) {
             <div className="gallery-scroll">
               {galleryImages.map((img, i) => (
                 <div key={i} className="gallery-scroll-item">
-                  <img src={img} alt={`${project?.title ?? "Project"} ${i + 1}`} />
+                  <img src={img} alt={`${project?.title ?? "Project"} ${i + 1}`} style={{ objectFit: "contain" }} />
                 </div>
               ))}
             </div>
