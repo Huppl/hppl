@@ -89,22 +89,22 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
 
   async function uploadCover(id: number, file: File) {
     setUploadingId(id);
-    const url = await sbUploadImage(file, "covers");
+    const { url, error } = await sbUploadImage(file, "covers");
     setUploadingId(null);
     if (url) patchProject(id, { image: url });
-    else alert(t("admin_upload_error"));
+    else alert(`${t("admin_upload_error")}${error ? `: ${error}` : ""}`);
   }
 
   async function uploadGalleryImage(id: number, file: File) {
     setGalleryUploadingId(id);
-    const url = await sbUploadImage(file, "gallery");
+    const { url, error } = await sbUploadImage(file, "gallery");
     setGalleryUploadingId(null);
     if (url) {
       const current = projects.find((p) => p.id === id);
       const gallery = [...(current?.gallery ?? []), url];
       patchProject(id, { gallery });
     } else {
-      alert(t("admin_upload_error"));
+      alert(`${t("admin_upload_error")}${error ? `: ${error}` : ""}`);
     }
   }
 
