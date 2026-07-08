@@ -6,7 +6,7 @@ import { loadProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
 import { Hud } from "@/components/Hud";
 import type { CategoryValue, Project } from "@/lib/types";
-import { sbIsAuthenticated, sbSignIn, sbUpdateProject } from "@/lib/supabase";
+import { sbIsAuthenticated, sbSignIn, sbUpdateProject, sbUploadImage } from "@/lib/supabase";
 
 function categoryLabel(t: (k: string) => string, value?: string) {
   const c = CATEGORIES.find((x) => x.value === value);
@@ -18,6 +18,7 @@ export function ProjectDetail({ id }: { id: number }) {
   const { t } = useLang();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false); // upload state
 
   // admin state
   const [panelOpen, setPanelOpen] = useState(false);
@@ -74,6 +75,23 @@ export function ProjectDetail({ id }: { id: number }) {
     const newGallery = [...project.gallery];
     newGallery.splice(index, 1);
     patch({ gallery: newGallery });
+  }
+
+  async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || !project) return;
+    setIsUploading(true);
+
+    const newGallery = [...(project.gallery || [])];
+    for (const file of Array.from(files)) {
+        if (newGallery.length >= 30) break;
+        const publicUrl = await sbUploadImage(file);
+        if (publicUrl) {
+            newGallery.push(publicUrl);
+        }
+    }
+    patch({ gallery: newGallery });
+    setIsUploading(false);
   }
 
   if (!loading && !project) {

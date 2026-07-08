@@ -140,9 +140,16 @@ export async function sbUpdateContact(
   return !error;
 }
 
-export async function sbDeleteContact(id: number): Promise<boolean> {
-  if (!sb) return false;
-  const { error } = await sb.from("contacts").delete().eq("id", id);
-  if (error) console.error("sbDeleteContact:", error.message);
-  return !error;
+// ---------- Uploads ----------
+export async function sbUploadImage(file: File, bucket: string = 'images'): Promise<string | null> {
+  if (!sb) return null;
+  const filePath = `uploads/${Date.now()}_${file.name}`;
+  const { error } = await sb.storage.from(bucket).upload(filePath, file);
+  if (error) {
+    console.error("sbUploadImage:", error.message);
+    return null;
+  }
+  const { data } = sb.storage.from(bucket).getPublicUrl(filePath);
+  return data.publicUrl;
 }
+
