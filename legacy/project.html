@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Проект // HPL</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ui-layer">
+    <div class="ui-row">
+      <div class="ui-block" style="text-transform: uppercase;">
+        LOC // <span id="sys-loc" class="ui-dim">DETECTING...</span><br>
+        SYS // <span id="sys-time" class="ui-dim">--:--:--</span> <span class="red-dot">●</span>
+      </div>
+      <div class="ui-block" style="text-align: right;">
+        <ul class="clean-list">
+          <li><a href="index.html" style="color: inherit; text-decoration: none;">Index</a></li>
+          <li><a href="index.html#works" style="color: inherit; text-decoration: none;">Works</a></li>
+          <li><a href="index.html#laboratory" style="color: inherit; text-decoration: none;">Laboratory</a></li>
+          <li><a href="index.html#contact" style="color: inherit; text-decoration: none;">Contact</a></li>
+          <li class="language-switcher">
+            <button id="lang-ru" class="lang-btn lang-active" data-lang="ru">РУ</button>
+            <button id="lang-en" class="lang-btn" data-lang="en">EN</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <section class="hero-view project-page" id="top">
+    <div class="project-page-header">
+      <div class="project-back">
+        <a href="index.html" data-i18n-key="back_to_portfolio">← Назад к портфолию</a>
+      </div>
+      <div class="project-summary">
+        <span id="project-category" class="section-index">PROJECT</span>
+        <h1 id="project-title">Loading...</h1>
+        <p id="project-meta" class="project-meta">Категория / год</p>
+        <p id="project-description" class="project-description">Описание проекта загружается...</p>
+      </div>
+    </div>
+    <div class="project-hero-image">
+      <img id="project-hero-img" src="images/1.jpg" alt="Project preview" />
+    </div>
+  </section>
+
+  <section class="simple-section project-details-panel">
+    <span class="section-index" data-i18n-key="project_details">PROJECT DETAILS</span>
+    <p id="project-notice" data-i18n-key="project_notice">Здесь отображаются основные данные проекта. Открой админку, чтобы отредактировать название, описание или изображение.</p>
+  </section>
+
+  <script src="translations.js"></script>
+  <script src="projects-data.js"></script>
+
+  <div id="admin-auth" class="admin-auth">
+    <div class="admin-auth-modal">
+      <h3 data-i18n-key="admin_auth_title">Доступ в админку</h3>
+      <p data-i18n-key="admin_auth_prompt">Введи пароль:</p>
+      <input id="admin-password-input" type="password" placeholder="Пароль" />
+      <button id="admin-auth-btn" class="admin-btn" data-i18n-key="admin_auth_btn">Войти</button>
+      <p id="admin-auth-error" class="admin-error" style="display: none;"></p>
+    </div>
+  </div>
+
+  <button id="admin-toggle" class="admin-toggle" title="Открыть панель админа">ADMIN</button>
+  <div id="admin-backdrop" class="admin-backdrop"></div>
+  <div id="project-admin-panel" class="admin-panel">
+    <div class="admin-panel-header">
+      <span data-i18n-key="project_edit">PROJECT EDIT</span>
+      <button id="admin-close" class="admin-close" title="Закрыть">×</button>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" data-tab="project" data-i18n-key="project_params">Параметры</button>
+    </div>
+    <div id="admin-tab-project" class="admin-tab-content active">
+      <p class="admin-note" data-i18n-key="project_change_data">Изменяй данные текущего проекта и сохраняй изменения.</p>
+      <div class="admin-list">
+        <div class="admin-row">
+          <input id="project-admin-title" class="admin-field" data-i18n-placeholder="project_title_placeholder" placeholder="Название проекта" />
+        </div>
+        <div class="admin-row">
+          <input id="project-admin-meta" class="admin-field" data-i18n-placeholder="project_meta_placeholder" placeholder="Краткое описание / мета" />
+        </div>
+        <div class="admin-row">
+          <select id="project-admin-category" class="admin-field"></select>
+        </div>
+        <div class="admin-row">
+          <input id="project-admin-image" class="admin-field" data-i18n-placeholder="project_image_placeholder" placeholder="Путь к изображению (images/...)" />
+        </div>
+        <div class="admin-row">
+          <textarea id="project-admin-description" class="admin-textarea" data-i18n-placeholder="project_desc_placeholder" placeholder="Полное описание проекта"></textarea>
+        </div>
+      </div>
+      <button id="project-admin-save" class="admin-btn" data-i18n-key="project_save">Сохранить проект</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

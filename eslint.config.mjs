@@ -1,0 +1,31 @@
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  {
+    rules: {
+      // Project images come from user-editable paths/URLs (Supabase), so plain
+      // <img> is intentional over next/image here.
+      "@next/next/no-img-element": "off",
+      // Legacy <a href="/"> links in Hud and ProjectDetail are intentional navigation.
+      "@next/next/no-html-link-for-pages": "off",
+      // setState inside useEffect for localStorage hydration and Supabase reload
+      // is the standard pattern for client-side data init.
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    "legacy/**",
+  ]),
+]);
+
+export default eslintConfig;

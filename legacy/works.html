@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>HPL // VISUAL RESEARCH</title>
+  
+  <!-- Подключаем наш отдельный файл со стилями -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="works-page">
+  <nav class="main-nav">
+    <a href="index.html">MAIN</a>
+  </nav>
+<div class="filter-bar">
+  <button class="filter-button active" data-category="all">Посмотреть все</button>
+  <button class="filter-button" data-category="3d">3D</button>
+  <button class="filter-button" data-category="web">веб-дизайн</button>
+  <button class="filter-button" data-category="branding">Брендинг</button>
+  <button class="filter-button" data-category="art">Арт</button>
+  <button class="filter-button" data-category="ai">Нейросети</button>
+  <button class="filter-button" data-category="type">Типографика</button>
+  <button class="filter-button" data-category="motion">Моушн</button>
+</div>
+<div class="work-board" id="work-board">
+  <div class="work-card" data-link="emotion-lab.html" data-category="branding">
+    <span class="work-index">01</span>
+    <h2>E-Motion Lab</h2>
+    <p>// Branding // 2026</p>
+  </div>
+  <div class="work-card" data-link="neural-echo.html" data-category="3d">
+    <span class="work-index">02</span>
+    <h2>Neural Echo</h2>
+    <p>// 3D Design // 2025</p>
+  </div>
+  <div class="work-card" data-link="kinetic-static.html" data-category="art">
+    <span class="work-index">03</span>
+    <h2>Kinetic Static</h2>
+    <p>// Art Direction // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="art">
+    <span class="work-index">04</span>
+    <h2>Glitch Field</h2>
+    <p>// Visual Study // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="motion">
+    <span class="work-index">05</span>
+    <h2>Signal Noise</h2>
+    <p>// Motion Graphic // 2026</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="web">
+    <span class="work-index">06</span>
+    <h2>Peripheral Vision</h2>
+    <p>// Interface // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="art">
+    <span class="work-index">07</span>
+    <h2>Holo Archive</h2>
+    <p>// Experimental // 2026</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="type">
+    <span class="work-index">08</span>
+    <h2>Static Pulse</h2>
+    <p>// Spatial Lab // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="motion">
+    <span class="work-index">09</span>
+    <h2>Orbit Sequence</h2>
+    <p>// Motion Study // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="3d">
+    <span class="work-index">10</span>
+    <h2>Photon Cast</h2>
+    <p>// Light System // 2026</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="branding">
+    <span class="work-index">11</span>
+    <h2>Glass Circuit</h2>
+    <p>// Material Research // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="ai">
+    <span class="work-index">12</span>
+    <h2>Memory Grid</h2>
+    <p>// Data Interface // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="3d">
+    <span class="work-index">13</span>
+    <h2>Prism Fade</h2>
+    <p>// Lighting // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="type">
+    <span class="work-index">14</span>
+    <h2>Pulse Frame</h2>
+    <p>// Display // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="motion">
+    <span class="work-index">15</span>
+    <h2>Vector Drift</h2>
+    <p>// Motion // 2026</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="web">
+    <span class="work-index">16</span>
+    <h2>Neon Grid</h2>
+    <p>// Interface // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="3d">
+    <span class="work-index">17</span>
+    <h2>Pulse Lens</h2>
+    <p>// Projection // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="ai">
+    <span class="work-index">18</span>
+    <h2>Static Line</h2>
+    <p>// System // 2026</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="3d">
+    <span class="work-index">19</span>
+    <h2>Mirror Flux</h2>
+    <p>// Spatial // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="motion">
+    <span class="work-index">20</span>
+    <h2>Echo Frame</h2>
+    <p>// Audio // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="web">
+    <span class="work-index">21</span>
+    <h2>Signal Mesh</h2>
+    <p>// Network // 2026</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="ai">
+    <span class="work-index">22</span>
+    <h2>Phase Shift</h2>
+    <p>// Experimental // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="3d">
+    <span class="work-index">23</span>
+    <h2>Haze Circuit</h2>
+    <p>// Lens // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="motion">
+    <span class="work-index">24</span>
+    <h2>Frame Pulse</h2>
+    <p>// Kinetic // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="art">
+    <span class="work-index">25</span>
+    <h2>Drift Signal</h2>
+    <p>// Visual // 2026</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="3d">
+    <span class="work-index">26</span>
+    <h2>Lens Shift</h2>
+    <p>// Lighting // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="ai">
+    <span class="work-index">27</span>
+    <h2>Phase Grid</h2>
+    <p>// Data // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="motion">
+    <span class="work-index">28</span>
+    <h2>Pulse Mesh</h2>
+    <p>// Motion // 2026</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="web">
+    <span class="work-index">29</span>
+    <h2>Vector Flux</h2>
+    <p>// Interface // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="type">
+    <span class="work-index">30</span>
+    <h2>Neon Line</h2>
+    <p>// System // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="art">
+    <span class="work-index">31</span>
+    <h2>Ripple Frame</h2>
+    <p>// Display // 2026</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="3d">
+    <span class="work-index">32</span>
+    <h2>Glass Mesh</h2>
+    <p>// Spatial // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="motion">
+    <span class="work-index">33</span>
+    <h2>Orbit Flux</h2>
+    <p>// Motion // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="art">
+    <span class="work-index">34</span>
+    <h2>Shadow Pulse</h2>
+    <p>// Visual // 2026</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="web">
+    <span class="work-index">35</span>
+    <h2>Field Grid</h2>
+    <p>// Interface // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="3d">
+    <span class="work-index">36</span>
+    <h2>Prism Signal</h2>
+    <p>// Light // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="ai">
+    <span class="work-index">37</span>
+    <h2>Static Flux</h2>
+    <p>// Data // 2026</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="motion">
+    <span class="work-index">38</span>
+    <h2>Echo Drift</h2>
+    <p>// Audio // 2024</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="type">
+    <span class="work-index">39</span>
+    <h2>Lens Grid</h2>
+    <p>// Display // 2025</p>
+  </div>
+  <div class="work-card" data-link="project-template.html" data-category="art">
+    <span class="work-index">40</span>
+    <h2>Phase Pulse</h2>
+    <p>// Experimental // 2026</p>
+  </div>
+</div>
+
+<script>
+  const cards = Array.from(document.querySelectorAll('.work-card'));
+  const filterButtons = Array.from(document.querySelectorAll('.filter-button'));
+
+  const setFilter = (category) => {
+    cards.forEach(card => {
+      const categories = card.dataset.category ? card.dataset.category.split(' ') : [];
+      const visible = category === 'all' || categories.includes(category);
+      card.style.display = visible ? '' : 'none';
+    });
+
+    filterButtons.forEach(button => {
+      button.classList.toggle('active', button.dataset.category === category);
+    });
+  };
+
+  const defaultCardImage = 'images/1.jpg';
+
+  const injectCardImages = () => {
+    cards.forEach(card => {
+      if (card.querySelector('.work-card-image')) return;
+      const imageSrc = card.dataset.image || defaultCardImage;
+      const preview = document.createElement('div');
+      preview.className = 'work-card-image';
+      const img = document.createElement('img');
+      img.src = imageSrc;
+      img.alt = `${card.querySelector('h2')?.innerText || 'Project'} preview`;
+      preview.appendChild(img);
+      card.insertBefore(preview, card.firstChild);
+    });
+  };
+
+  injectCardImages();
+
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => setFilter(button.dataset.category));
+  });
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      window.location.href = card.dataset.link;
+    });
+  });
+
+  setFilter('all');
+</script>
+</body>
+</html>

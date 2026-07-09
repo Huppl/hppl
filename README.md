@@ -1,0 +1,40 @@
+# hppl — hhppll.online
+
+Personal portfolio site — **HPL // Visual Research** (Matvey Lukin). Next.js 16
+(App Router, TypeScript, Tailwind 4), bilingual RU/EN, optional Supabase backend,
+deployed to a K3s + Traefik + ArgoCD VPS at **https://hhppll.online**.
+
+## Quick start
+
+```bash
+npm install
+cp .env.example .env.local   # optional: Supabase (publishable values, safe)
+npm run dev                  # http://localhost:3000
+```
+
+Without Supabase configured the site runs on the static content in `src/data/`.
+
+## Working in this repo (agents & humans)
+
+Read **[AGENTS.md](./AGENTS.md)** and **[docs/CONTEXT-MAP.md](./docs/CONTEXT-MAP.md)**
+first. The `docs/**/CONTEXT.md` files describe each area (frontend / data /
+deployment) and are kept up to date as part of every change.
+
+## Structure
+
+```
+src/app/         routes, layout, globals.css (design system)
+src/components/   Hud, Hero, Works, Laboratory, Contact, AdminPanel, ProjectDetail
+src/lib/          i18n, translations, supabase (optional), projects-store, types
+src/data/         projects.ts + site.ts — static content, editable directly
+legacy/           original static HTML/CSS/JS — reference only
+k8s/              Helm chart + ArgoCD Application
+Dockerfile        Next.js standalone image
+.github/workflows/deploy.yml
+```
+
+## Deploy
+
+Push to `main` → GitHub Actions builds the image to GHCR and bumps the Helm tag →
+ArgoCD ships it. One-time setup and details in
+[docs/deployment/CONTEXT.md](./docs/deployment/CONTEXT.md).

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>HPL // VISUAL RESEARCH</title>
+  
+  <!-- Подключаем наш отдельный файл со стилями -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Preload local fonts -->
+  <link rel="preload" href="FOnts/Geologica-VariableFont_CRSV,SHRP,slnt,wght.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="FOnts/NeutralFace.woff" as="font" type="font/woff" crossorigin>
+  <link rel="preload" href="FOnts/NonBureau-Regular-BF67107aef52442.otf" as="font" type="font/otf" crossorigin>
+</head>
+<body>
+
+  <!-- Зерно — поверх всей страницы, не только первого экрана -->
+  <svg class="grain-overlay" xmlns="http://www.w3.org/2000/svg">
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noise)"/>
+  </svg>
+
+  <!-- Угловой интерфейс — теперь фиксированная HUD-панель на всю страницу -->
+  <div class="ui-layer">
+    <div class="ui-row">
+      <div class="ui-block" style="text-transform: uppercase;">
+        LOC // <span id="sys-loc" class="ui-dim">DETECTING...</span><br>
+        SYS // <span id="sys-time" class="ui-dim">--:--:--</span> <span class="red-dot">●</span>
+      </div>
+      <div class="ui-block" style="text-align: right;">
+        <ul class="clean-list">
+          <li><a href="#top">Index</a></li>
+          <li><a href="#works">Works</a></li>
+          <li><a href="#laboratory">Laboratory</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li class="language-switcher">
+            <button id="lang-ru" class="lang-btn lang-active" data-lang="ru">РУ</button>
+            <button id="lang-en" class="lang-btn" data-lang="en">EN</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ui-row">
+      <div class="ui-block ui-dim">
+        <span style="color: var(--text);">CURRENT LOG:</span><br>
+        Efir App<br>
+        Silver Smoke<br>
+        Garbage Chic
+      </div>
+      <div class="ui-block ui-dim" style="text-align: right;">
+        Name: Matvey Lukin<br>
+        Age: 20<br>
+        Status: Student
+      </div>
+    </div>
+  </div>
+
+  <!-- ЭКРАН 1 — герой, ровно 100vh, дальше страница скроллится -->
+  <section class="hero-view" id="top">
+
+    <!-- Фон -->
+    <video class="background-gif" autoplay muted loop playsinline poster="images/hero-poster.jpg">
+      <source src="videos/hero-bg.mp4" type="video/mp4">
+    </video>
+
+    <!-- Геометрия -->
+    <div class="geometry-circle circle-1"></div>
+    <div class="geometry-circle circle-2"></div>
+    <div class="geometry-line line-v"></div>
+
+    <!-- Центральный контент -->
+    <div class="content">
+      <h1 id="hero-title">Portfolio</h1>
+      <div class="subtitle"></div>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 2 — Works, раньше отдельная страница, теперь секция ниже герой-экрана -->
+  <section id="works">
+    <div class="filter-bar">
+      <button class="filter-button active" data-category="all" data-i18n-key="filter_all">Посмотреть все</button>
+      <button class="filter-button" data-category="3d" data-i18n-key="filter_3d">3D</button>
+      <button class="filter-button" data-category="web" data-i18n-key="filter_web">Веб-дизайн</button>
+      <button class="filter-button" data-category="branding" data-i18n-key="filter_branding">Брендинг</button>
+      <button class="filter-button" data-category="art" data-i18n-key="filter_art">Арт</button>
+      <button class="filter-button" data-category="ai" data-i18n-key="filter_ai">Нейросети</button>
+      <button class="filter-button" data-category="type" data-i18n-key="filter_type">Типографика</button>
+      <button class="filter-button" data-category="motion" data-i18n-key="filter_motion">Моушн</button>
+    </div>
+    <div class="work-board" id="work-board">
+      <!-- Карточки больше не лежат тут захардкоженными — они рендерятся
+           в script.js из window.PROJECTS_DEFAULT / localStorage.
+           Редактируются через панель админа (кнопка ADMIN внизу справа). -->
+    </div>
+  </section>
+
+  <!-- ЭКРАН 3 — Laboratory -->
+  <section id="laboratory" class="simple-section">
+    <span class="section-index" data-i18n-key="lab_04">04 // LABORATORY</span>
+    <h2 data-i18n-key="laboratory_title">In Progress</h2>
+    <p id="laboratory-content" data-i18n-key="laboratory_studying">Сейчас изучаю: Web Design, 3D Modeling, Creative Coding</p>
+  </section>
+
+  <!-- ЭКРАН 4 — Contact -->
+  <section id="contact" class="simple-section">
+    <span class="section-index" data-i18n-key="contact_05">05 // CONTACT</span>
+    <h2 data-i18n-key="contact_title">Say Hello</h2>
+    <p data-i18n-key="contact_desc">Открыт для проектов и коллабораций.</p>
+    <div id="contact-links-container">
+      <a class="contact-link" href="mailto:hello@example.com">hello@example.com</a>
+    </div>
+  </section>
+
+  <!-- Данные проектов — редактируются через панель админа -->
+  <script src="translations.js"></script>
+  <script src="projects-data.js"></script>
+
+  <!-- Панель админа — правит projects прямо в браузере, хранит в localStorage -->
+  <div id="admin-auth" class="admin-auth">
+    <div class="admin-auth-modal">
+      <h3>Доступ в админку</h3>
+      <p>Введи пароль:</p>
+      <input id="admin-password-input" type="password" placeholder="Пароль" />
+      <button id="admin-auth-btn" class="admin-btn">Войти</button>
+      <p id="admin-auth-error" class="admin-error" style="display: none;"></p>
+    </div>
+  </div>
+
+  <button id="admin-toggle" class="admin-toggle" title="Открыть панель админа">ADMIN</button>
+  <div id="admin-backdrop" class="admin-backdrop"></div>
+  <div id="admin-panel" class="admin-panel">
+    <div class="admin-panel-header">
+      <span>PROJECT ADMIN</span>
+      <button id="admin-close" class="admin-close" title="Закрыть">×</button>
+    </div>
+    
+    <!-- Вкладки админа -->
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" data-tab="projects">Проекты</button>
+      <button class="admin-tab-btn" data-tab="laboratory">Laboratory</button>
+      <button class="admin-tab-btn" data-tab="contact">Contact</button>
+    </div>
+
+    <!-- Вкладка: Проекты -->
+    <div id="admin-tab-projects" class="admin-tab-content active">
+      <p class="admin-note">
+        Правки сохраняются только в этом браузере. Чтобы они появились у всех
+        посетителей сайта — нажми «Экспорт кода» и вставь результат в
+        <code>projects-data.js</code>.
+      </p>
+      <div id="admin-list" class="admin-list"></div>
+      <div class="admin-actions">
+        <button id="admin-add" class="admin-btn">+ Добавить проект</button>
+        <button id="admin-export" class="admin-btn">Экспорт кода</button>
+        <button id="admin-reset" class="admin-btn admin-btn-danger">Сбросить к исходным</button>
+      </div>
+      <textarea id="admin-export-output" class="admin-export-output" readonly
+        placeholder="Здесь появится код после «Экспорт кода» — скопируй и вставь в projects-data.js"></textarea>
+    </div>
+
+    <!-- Вкладка: Laboratory -->
+    <div id="admin-tab-laboratory" class="admin-tab-content">
+      <p class="admin-note">Редактируй текст Laboratory (что ты изучаешь прямо сейчас)</p>
+      <textarea id="admin-laboratory-text" class="admin-textarea" placeholder="Введи текст..."></textarea>
+      <button id="admin-laboratory-save" class="admin-btn">Сохранить</button>
+    </div>
+
+    <!-- Вкладка: Contact -->
+    <div id="admin-tab-contact" class="admin-tab-content">
+      <p class="admin-note">Добавляй и редактируй способы связи</p>
+      <div id="admin-contact-list" class="admin-list"></div>
+      <button id="admin-contact-add" class="admin-btn">+ Добавить способ связи</button>
+    </div>
+  </div>
+
+  <!-- Подключаем наш отдельный файл со скриптами -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>

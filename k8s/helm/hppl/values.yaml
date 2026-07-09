@@ -1,0 +1,32 @@
+# Deployed by ArgoCD (see k8s/argocd/application.yaml). CI bumps image.tag to the
+# built commit SHA on every push to main.
+#
+# Supabase config is BUILD-TIME (NEXT_PUBLIC_ in .env.production, baked into the
+# image), so there is nothing Supabase-related to set here.
+
+image:
+  repository: ghcr.io/huppl/hppl
+  tag: "v1.7.1"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+# apex domain served over HTTPS via Traefik + Let's Encrypt (ACME HTTP-01)
+domain: hhppll.online
+certResolver: letsencrypt
+
+service:
+  port: 80
+
+containerPort: 3000
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 96Mi
+  limits:
+    memory: 256Mi
+
+# Add here only if the ghcr package is PRIVATE (e.g. name: ghcr-pull).
+# Public package → leave empty, no secret needed.
+imagePullSecrets: []
