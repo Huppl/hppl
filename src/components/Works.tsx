@@ -52,6 +52,11 @@ export function Works() {
               className="work-card"
               onClick={() => router.push(`/project/${p.id}`)}
             >
+              {p.is_pinned && (
+                <span className="work-pin-badge" title={t("pinned")}>
+                  📌
+                </span>
+              )}
               <div className="work-card-image">
                 {p.image ? (
                   <MediaPreview
