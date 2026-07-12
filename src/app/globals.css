@@ -1391,6 +1391,12 @@ ul.clean-list li:hover {
   font-size: 0.9rem;
 }
 
+.fresh-card--error {
+  min-height: 120px;
+  border-style: dashed;
+  opacity: 0.5;
+}
+
 /* ============================================================
    Responsive breakpoints
    ============================================================ */

@@ -6,14 +6,43 @@ import { useProjects, ProjectsProvider } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
 import { MediaPreview } from "@/components/MediaPreview";
 import { Hud } from "@/components/Hud";
+import { CardErrorBoundary } from "@/components/CardErrorBoundary";
 import type { CategoryValue } from "@/lib/types";
 
-function tagLabels(project: { category: CategoryValue; tags?: CategoryValue[] }, t: (k: string) => string) {
+function tagLabels(project: { category: CategoryValue; tags?: CategoryValue[] | null }, t: (k: string) => string) {
   const values = project.tags ?? [project.category];
   return values.map((v) => {
     const cat = CATEGORIES.find((c) => c.value === v);
     return cat ? t(cat.i18nKey) : v;
   });
+}
+
+function FreshCard({ project, t, onClick }: {
+  project: { id?: number | null; title?: string | null; meta?: string | null; category: CategoryValue; tags?: CategoryValue[] | null; image?: string | null };
+  t: (k: string) => string;
+  onClick: () => void;
+}) {
+  return (
+    <div className="fresh-card" onClick={onClick}>
+      <div className="fresh-card-image">
+        {project.image ? (
+          <MediaPreview
+            src={project.image}
+            alt={`${project.title || "Project"} preview`}
+          />
+        ) : null}
+      </div>
+      <div className="fresh-card-text">
+        <div className="fresh-card-tags">
+          {tagLabels(project, t).map((label) => (
+            <span key={label} className="fresh-tag">{label}</span>
+          ))}
+        </div>
+        <h2 className="fresh-card-title">{project.title || "Untitled"}</h2>
+        <p className="fresh-card-meta">{project.meta || ""}</p>
+      </div>
+    </div>
+  );
 }
 
 function FreshContent() {
@@ -33,29 +62,13 @@ function FreshContent() {
         </div>
         <div className="fresh-feed">
           {sorted.map((p) => (
-            <div
-              key={p.id}
-              className="fresh-card"
-              onClick={() => router.push(`/project/${p.id}`)}
-            >
-              <div className="fresh-card-image">
-                {p.image ? (
-                  <MediaPreview
-                    src={p.image}
-                    alt={`${p.title || "Project"} preview`}
-                  />
-                ) : null}
-              </div>
-              <div className="fresh-card-text">
-                <div className="fresh-card-tags">
-                  {tagLabels(p, t).map((label) => (
-                    <span key={label} className="fresh-tag">{label}</span>
-                  ))}
-                </div>
-                <h2 className="fresh-card-title">{p.title || "Untitled"}</h2>
-                <p className="fresh-card-meta">{p.meta || ""}</p>
-              </div>
-            </div>
+            <CardErrorBoundary key={p.id} fallback={<div className="fresh-card fresh-card--error" />}>
+              <FreshCard
+                project={p}
+                t={t}
+                onClick={() => router.push(`/project/${p.id}`)}
+              />
+            </CardErrorBoundary>
           ))}
         </div>
       </section>
