@@ -5,7 +5,7 @@
 // The anon/publishable key is safe for the browser (it ships in client JS by
 // design); row-level-security in Supabase gates all writes to the admin user.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Contact, Laboratory, Project } from "@/lib/types";
+import type { Contact, GalleryItem, Laboratory, Project } from "@/lib/types";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
