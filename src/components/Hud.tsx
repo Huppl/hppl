@@ -51,6 +51,9 @@ export function Hud() {
               <a href="/#works" onClick={() => setNavOpen(false)}>{t("works")}</a>
             </li>
             <li>
+              <a href="/fresh" onClick={() => setNavOpen(false)}>{t("fresh")}</a>
+            </li>
+            <li>
               <a href="/#about" onClick={() => setNavOpen(false)}>{t("laboratory")}</a>
             </li>
             <li>

@@ -28,6 +28,7 @@ src/
   app/
     layout.tsx            fonts (next/font/local), providers, grain, metadata
     page.tsx              home: Hud + Hero + Works + Laboratory + Contact + AdminPanel
+    fresh/page.tsx        fresh works: horizontal scroll feed of latest projects
     project/[id]/page.tsx project detail route → <ProjectDetail>
     globals.css           the whole design system (ported from the old style.css)
     fonts/                NeutralFace / NonBureau / Geologica
