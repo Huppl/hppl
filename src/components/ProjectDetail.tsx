@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import { loadProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
@@ -85,7 +86,7 @@ export function ProjectDetail({ id }: { id: number }) {
       <section className="hero-view project-page" id="top">
         <div className="project-page-header">
           <div className="project-back">
-            <a href="/">{t("back_to_portfolio")}</a>
+            <Link href="/">{t("back_to_portfolio")}</Link>
           </div>
           <div className="project-summary">
             <span className="section-index">
