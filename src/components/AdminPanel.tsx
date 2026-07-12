@@ -482,7 +482,7 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
       // sbFetchProjects normalizes them to GalleryItem[] on read.
       const existingUrls = existingGallery.map((g) => (typeof g === "string" ? g : g.url)).filter(Boolean);
       const gallery = [...existingUrls, ...newUrls];
-      patchProject(pendingProjectId, { gallery });
+      patchProject(pendingProjectId, { gallery: gallery as unknown as GalleryItem[] });
     }
 
     const errorCount = pendingFiles.length - newUrls.length;
@@ -503,7 +503,7 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
     const gallery = current.gallery
       .filter((_, i) => i !== index)
       .map((g) => (typeof g === "string" ? g : g.url));
-    patchProject(id, { gallery });
+    patchProject(id, { gallery: gallery as unknown as GalleryItem[] });
   }
 
   function handleGalleryDragEnd(event: DragEndEvent, projectId: number) {
@@ -519,7 +519,7 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
 
     const reordered = arrayMove(project.gallery, oldIndex, newIndex)
       .map((g) => (typeof g === "string" ? g : g.url));
-    patchProject(projectId, { gallery: reordered });
+    patchProject(projectId, { gallery: reordered as unknown as GalleryItem[] });
     setActiveGalleryId(null);
   }
 
