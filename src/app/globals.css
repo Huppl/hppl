@@ -416,6 +416,10 @@ ul.clean-list li:hover {
   margin: 0 auto;
 }
 
+.project-back {
+  position: relative;
+  z-index: 21;
+}
 .project-back a {
   display: inline-block;
   color: var(--dim);
