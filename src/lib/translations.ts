@@ -30,6 +30,8 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     filter_type: "Типографика",
     filter_motion: "Моушн",
 
+    pinned: "Закреплено",
+
     laboratory_title: "Обо мне",
     laboratory_studying: "Матвей Лукин — 20-летний студент-дизайнер. Изучаю веб-дизайн, 3D-моделирование и креативное программирование.",
 
@@ -142,6 +144,8 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     filter_ai: "AI",
     filter_type: "Typography",
     filter_motion: "Motion",
+
+    pinned: "Pinned",
 
     laboratory_title: "About Me",
     laboratory_studying: "Matvey Lukin — 20 y/o design student. Studying web design, 3D modeling and creative coding.",

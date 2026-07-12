@@ -14,6 +14,7 @@ import {
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
+  rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useLang } from "@/lib/i18n";
@@ -61,6 +62,59 @@ function recalcOrder(projects: Project[]): { id: number; order_index: number }[]
   return projects.map((p, i) => ({ id: p.id, order_index: i }));
 }
 
+function SortableGalleryItem({
+  img,
+  index,
+  projectId,
+  t,
+  onRemove,
+}: {
+  img: string;
+  index: number;
+  projectId: number;
+  t: (k: string) => string;
+  onRemove: (id: number, index: number) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: `${projectId}-gallery-${index}` });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : undefined,
+    zIndex: isDragging ? 10 : undefined,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`admin-gallery-item${isDragging ? " is-dragging" : ""}`}
+    >
+      <button
+        className="admin-gallery-drag-handle"
+        title={t("admin_drag")}
+        {...attributes}
+        {...listeners}
+      >
+        ⋮⋮
+      </button>
+      <MediaPreview
+        src={img}
+        alt={`Gallery ${index + 1}`}
+        videoClassName="media-preview-video media-preview-admin"
+      />
+      <button
+        className="admin-delete"
+        title={t("admin_remove_image")}
+        onClick={() => onRemove(projectId, index)}
+      >
+        ✕
+      </button>
+    </div>
+  );
+}
+
 function SortableProjectRow({
   p,
   t,
@@ -70,6 +124,10 @@ function SortableProjectRow({
   onPatch,
   onRemoveGalleryImage,
   onOpenFilePicker,
+  onGalleryDragEnd,
+  activeGalleryId,
+  setActiveGalleryId,
+  gallerySensors,
 }: {
   p: Project;
   t: (k: string) => string;
@@ -79,6 +137,10 @@ function SortableProjectRow({
   onPatch: (id: number, fields: Partial<Project>) => void;
   onRemoveGalleryImage: (id: number, index: number) => void;
   onOpenFilePicker: (id: number) => void;
+  onGalleryDragEnd: (event: DragEndEvent, projectId: number) => void;
+  activeGalleryId: string | null;
+  setActiveGalleryId: (id: string | null) => void;
+  gallerySensors: ReturnType<typeof useSensors>;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: p.id });
@@ -171,24 +233,30 @@ function SortableProjectRow({
       {(p.gallery?.length ?? 0) > 0 ? (
         <div className="admin-gallery-section">
           <span className="admin-sublabel">{t("gallery_title")}</span>
-          <div className="admin-gallery-grid">
-            {p.gallery?.map((img, i) => (
-              <div key={i} className="admin-gallery-item">
-                <MediaPreview
-                  src={img}
-                  alt={`${p.title} ${i + 1}`}
-                  videoClassName="media-preview-video media-preview-admin"
-                />
-                <button
-                  className="admin-delete"
-                  title={t("admin_remove_image")}
-                  onClick={() => onRemoveGalleryImage(p.id, i)}
-                >
-                  ✕
-                </button>
+          <DndContext
+            sensors={gallerySensors}
+            collisionDetection={closestCenter}
+            onDragStart={() => setActiveGalleryId(String(p.id))}
+            onDragEnd={(event) => onGalleryDragEnd(event, p.id)}
+          >
+            <SortableContext
+              items={p.gallery?.map((_, i) => `${p.id}-gallery-${i}`) ?? []}
+              strategy={rectSortingStrategy}
+            >
+              <div className="admin-gallery-grid">
+                {p.gallery?.map((img, i) => (
+                  <SortableGalleryItem
+                    key={`${p.id}-gallery-${i}`}
+                    img={img}
+                    index={i}
+                    projectId={p.id}
+                    t={t}
+                    onRemove={onRemoveGalleryImage}
+                  />
+                ))}
               </div>
-            ))}
-          </div>
+            </SortableContext>
+          </DndContext>
         </div>
       ) : null}
       <button
@@ -220,8 +288,13 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
   const [pendingProjectId, setPendingProjectId] = useState<number | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [activeGalleryId, setActiveGalleryId] = useState<string | null>(null);
 
   const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+  );
+
+  const gallerySensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
 
@@ -427,6 +500,22 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
     patchProject(id, { gallery });
   }
 
+  function handleGalleryDragEnd(event: DragEndEvent, projectId: number) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const project = projects.find((p) => p.id === projectId);
+    if (!project?.gallery) return;
+
+    const oldIndex = project.gallery.findIndex((_, i) => `${projectId}-gallery-${i}` === active.id);
+    const newIndex = project.gallery.findIndex((_, i) => `${projectId}-gallery-${i}` === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reordered = arrayMove(project.gallery, oldIndex, newIndex);
+    patchProject(projectId, { gallery: reordered });
+    setActiveGalleryId(null);
+  }
+
   async function addProject() {
     const maxOrder = projects.reduce((max, p) => Math.max(max, p.order_index ?? 0), -1);
     const created = await sbInsertProject({
@@ -569,6 +658,10 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
                       onPatch={patchProject}
                       onRemoveGalleryImage={removeGalleryImage}
                       onOpenFilePicker={openFilePicker}
+                      onGalleryDragEnd={handleGalleryDragEnd}
+                      activeGalleryId={activeGalleryId}
+                      setActiveGalleryId={setActiveGalleryId}
+                      gallerySensors={gallerySensors}
                     />
                   ))}
                 </div>
