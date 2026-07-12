@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/lib/i18n";
 import { useProjects, ProjectsProvider } from "@/lib/projects-store";
@@ -21,21 +20,8 @@ function FreshContent() {
   const { t } = useLang();
   const router = useRouter();
   const { projects } = useProjects();
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   const sorted = [...projects].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
-
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (scrollRef.current) {
-      const el = scrollRef.current;
-      const atStart = el.scrollLeft === 0 && e.deltaY < 0;
-      const atEnd = Math.abs(el.scrollLeft + el.clientWidth - el.scrollWidth) < 1 && e.deltaY > 0;
-      if (!atStart && !atEnd) {
-        e.preventDefault();
-        el.scrollLeft += e.deltaY;
-      }
-    }
-  };
 
   return (
     <>
@@ -45,11 +31,7 @@ function FreshContent() {
           <span className="section-index">{t("fresh_index")}</span>
           <h1>{t("fresh")}</h1>
         </div>
-        <div
-          className="fresh-feed"
-          ref={scrollRef}
-          onWheel={handleWheel}
-        >
+        <div className="fresh-feed">
           {sorted.map((p) => (
             <div
               key={p.id}
@@ -64,13 +46,15 @@ function FreshContent() {
                   />
                 ) : null}
               </div>
-              <div className="fresh-card-tags">
-                {tagLabels(p, t).map((label) => (
-                  <span key={label} className="fresh-tag">{label}</span>
-                ))}
+              <div className="fresh-card-text">
+                <div className="fresh-card-tags">
+                  {tagLabels(p, t).map((label) => (
+                    <span key={label} className="fresh-tag">{label}</span>
+                  ))}
+                </div>
+                <h2 className="fresh-card-title">{p.title || "Untitled"}</h2>
+                <p className="fresh-card-meta">{p.meta || ""}</p>
               </div>
-              <h2 className="fresh-card-title">{p.title || "Untitled"}</h2>
-              <p className="fresh-card-meta">{p.meta || ""}</p>
             </div>
           ))}
         </div>
