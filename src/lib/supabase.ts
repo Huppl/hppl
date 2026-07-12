@@ -118,6 +118,44 @@ export async function sbIsAuthenticated(): Promise<boolean> {
 }
 
 // ---------- Projects ----------
+
+/** Extract a usable URL from any gallery item format (string URL, GalleryItem
+ *  object, or double-encoded JSON blobs created by the text[] column cycle). */
+function extractGalleryUrl(item: unknown): string {
+  if (typeof item === "string") {
+    // Plain URL string
+    if (item.startsWith("http")) return item;
+    // Try parsing as JSON (single or double-encoded)
+    try {
+      const parsed = JSON.parse(item);
+      if (typeof parsed === "string") return parsed; // double-encoded string
+      if (parsed && typeof parsed.url === "string") return parsed.url;
+    } catch { /* not JSON — skip */ }
+    return "";
+  }
+  if (item && typeof item === "object" && typeof (item as { url?: string }).url === "string") {
+    return (item as { url: string }).url;
+  }
+  return "";
+}
+
+function normalizeGalleryItem(item: unknown, fallbackDate: string): GalleryItem {
+  const url = extractGalleryUrl(item);
+  if (!url) return { url: "", uploadedAt: fallbackDate };
+  if (item && typeof item === "object" && typeof (item as { uploadedAt?: string }).uploadedAt === "string") {
+    return { url, uploadedAt: (item as { uploadedAt: string }).uploadedAt };
+  }
+  if (typeof item === "string") {
+    try {
+      const parsed = JSON.parse(item);
+      if (parsed && typeof parsed === "object" && typeof parsed.uploadedAt === "string") {
+        return { url, uploadedAt: parsed.uploadedAt };
+      }
+    } catch { /* ignore */ }
+  }
+  return { url, uploadedAt: fallbackDate };
+}
+
 export async function sbFetchProjects(): Promise<Project[]> {
   if (!sb) return [];
   const { data, error } = await sb
@@ -130,15 +168,14 @@ export async function sbFetchProjects(): Promise<Project[]> {
     console.error("sbFetchProjects:", error.message);
     return [];
   }
-  // Normalize gallery: old data stores string[], new data stores GalleryItem[]
+  // Normalize gallery: Supabase text[] column stores URL strings, but some
+  // entries got double-encoded as JSON when objects were saved to text[].
   return ((data as Project[]) ?? []).map((p) => ({
     ...p,
     gallery: Array.isArray(p.gallery)
-      ? p.gallery.map((item: string | { url: string; uploadedAt: string }) =>
-          typeof item === "string"
-            ? { url: item, uploadedAt: p.updated_at ?? "" }
-            : item,
-        )
+      ? (p.gallery
+          .map((item: unknown) => normalizeGalleryItem(item, p.updated_at ?? ""))
+          .filter((g: GalleryItem) => g.url !== "") as GalleryItem[])
       : p.gallery ?? null,
   }));
 }
