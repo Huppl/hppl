@@ -10,6 +10,11 @@ export type CategoryValue =
   | "type"
   | "motion";
 
+export interface GalleryItem {
+  url: string;
+  uploadedAt: string; // ISO date string
+}
+
 export interface Project {
   id: number;
   title: string;
@@ -17,13 +22,14 @@ export interface Project {
   category: CategoryValue; // legacy single tag
   tags?: CategoryValue[]; // multiple tags (preferred)
   image: string | null; // path or URL; null → framed placeholder
-  gallery?: string[] | null; // array of image URLs (Supabase Storage)
+  gallery?: GalleryItem[] | null; // array of gallery images with upload dates
   description: string;
   link?: string | null; // legacy; routing now uses /project/<id>
   external_url?: string | null;
   sort_order?: number | null;
   order_index?: number | null;
   is_pinned?: boolean;
+  updated_at?: string | null;
 }
 
 export interface Contact {

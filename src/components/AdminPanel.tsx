@@ -20,7 +20,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { useLang } from "@/lib/i18n";
 import { useProjects } from "@/lib/projects-store";
 import { CATEGORIES } from "@/data/site";
-import type { CategoryValue, Contact, Project } from "@/lib/types";
+import type { CategoryValue, Contact, GalleryItem, Project } from "@/lib/types";
 import { MediaPreview, isVideoUrl } from "@/components/MediaPreview";
 import {
   sbDeleteContact,
@@ -69,12 +69,13 @@ function SortableGalleryItem({
   t,
   onRemove,
 }: {
-  img: string;
+  img: string | GalleryItem;
   index: number;
   projectId: number;
   t: (k: string) => string;
   onRemove: (id: number, index: number) => void;
 }) {
+  const imgSrc = typeof img === "string" ? img : img.url;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: `${projectId}-gallery-${index}` });
 
@@ -100,7 +101,7 @@ function SortableGalleryItem({
         ⋮⋮
       </button>
       <MediaPreview
-        src={img}
+        src={imgSrc}
         alt={`Gallery ${index + 1}`}
         videoClassName="media-preview-video media-preview-admin"
       />
@@ -477,7 +478,9 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
       .map((r) => r.value);
 
     if (newUrls.length > 0) {
-      const gallery = [...existingGallery, ...newUrls];
+      const now = new Date().toISOString();
+      const newItems: GalleryItem[] = newUrls.map((url) => ({ url, uploadedAt: now }));
+      const gallery = [...existingGallery, ...newItems];
       patchProject(pendingProjectId, { gallery });
     }
 
@@ -524,7 +527,7 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
       category: "3d",
       tags: ["3d"],
       image: "",
-      gallery: [],
+      gallery: [] as GalleryItem[],
       description: "",
       order_index: maxOrder + 1,
       is_pinned: false,

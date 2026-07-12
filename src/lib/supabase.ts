@@ -130,7 +130,17 @@ export async function sbFetchProjects(): Promise<Project[]> {
     console.error("sbFetchProjects:", error.message);
     return [];
   }
-  return (data as Project[]) ?? [];
+  // Normalize gallery: old data stores string[], new data stores GalleryItem[]
+  return ((data as Project[]) ?? []).map((p) => ({
+    ...p,
+    gallery: Array.isArray(p.gallery)
+      ? p.gallery.map((item: string | { url: string; uploadedAt: string }) =>
+          typeof item === "string"
+            ? { url: item, uploadedAt: p.updated_at ?? "" }
+            : item,
+        )
+      : p.gallery ?? null,
+  }));
 }
 
 export async function sbInsertProject(

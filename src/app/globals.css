@@ -1335,6 +1335,7 @@ ul.clean-list li:hover {
 
 .fresh-card-image {
   width: 100%;
+  min-height: 200px;
   overflow: hidden;
   display: flex;
   align-items: center;

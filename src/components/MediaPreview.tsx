@@ -33,6 +33,7 @@ interface MediaPreviewProps {
   autoPlay?: boolean;
   playsInline?: boolean;
   preload?: "auto" | "metadata" | "none";
+  loading?: "lazy" | "eager";
   onNaturalSize?: (size: NaturalSize) => void;
 }
 
@@ -47,6 +48,7 @@ export function MediaPreview({
   autoPlay = true,
   playsInline = true,
   preload = "metadata",
+  loading = "lazy",
   onNaturalSize,
 }: MediaPreviewProps): ReactNode {
   if (!src) return null;
@@ -77,7 +79,7 @@ export function MediaPreview({
       style={style}
       src={src}
       alt={alt}
-      loading="lazy"
+      loading={loading}
       onLoad={(e) => {
         const img = e.currentTarget;
         onNaturalSize?.({ width: img.naturalWidth, height: img.naturalHeight });
