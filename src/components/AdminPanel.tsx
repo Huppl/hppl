@@ -478,9 +478,10 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
       .map((r) => r.value);
 
     if (newUrls.length > 0) {
-      const now = new Date().toISOString();
-      const newItems: GalleryItem[] = newUrls.map((url) => ({ url, uploadedAt: now }));
-      const gallery = [...existingGallery, ...newItems];
+      // Gallery column is text[] — store plain URL strings, not objects.
+      // sbFetchProjects normalizes them to GalleryItem[] on read.
+      const existingUrls = existingGallery.map((g) => (typeof g === "string" ? g : g.url)).filter(Boolean);
+      const gallery = [...existingUrls, ...newUrls];
       patchProject(pendingProjectId, { gallery });
     }
 
@@ -499,7 +500,9 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
   async function removeGalleryImage(id: number, index: number) {
     const current = projects.find((p) => p.id === id);
     if (!current?.gallery) return;
-    const gallery = current.gallery.filter((_, i) => i !== index);
+    const gallery = current.gallery
+      .filter((_, i) => i !== index)
+      .map((g) => (typeof g === "string" ? g : g.url));
     patchProject(id, { gallery });
   }
 
@@ -514,7 +517,8 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
     const newIndex = project.gallery.findIndex((_, i) => `${projectId}-gallery-${i}` === over.id);
     if (oldIndex === -1 || newIndex === -1) return;
 
-    const reordered = arrayMove(project.gallery, oldIndex, newIndex);
+    const reordered = arrayMove(project.gallery, oldIndex, newIndex)
+      .map((g) => (typeof g === "string" ? g : g.url));
     patchProject(projectId, { gallery: reordered });
     setActiveGalleryId(null);
   }
@@ -527,7 +531,7 @@ export function AdminPanel({ autoOpen = false }: { autoOpen?: boolean }) {
       category: "3d",
       tags: ["3d"],
       image: "",
-      gallery: [] as GalleryItem[],
+      gallery: [],
       description: "",
       order_index: maxOrder + 1,
       is_pinned: false,

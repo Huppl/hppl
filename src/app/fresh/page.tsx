@@ -20,6 +20,7 @@ function flattenGallery(projects: Project[]): FeedItem[] {
   for (const p of projects) {
     if (!p.gallery?.length) continue;
     for (const g of p.gallery) {
+      if (!g.url || !g.url.startsWith("http")) continue;
       items.push({
         url: g.url,
         uploadedAt: g.uploadedAt,
