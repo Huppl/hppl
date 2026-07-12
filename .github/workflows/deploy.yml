@@ -41,7 +41,7 @@ jobs:
 
       - name: Bump image tag in Helm values
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           TAG="${{ github.event.release.tag_name }}"
           # Fetch current file SHA (needed for API update)
