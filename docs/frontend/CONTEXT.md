@@ -15,10 +15,14 @@ The Next.js app. App Router, TypeScript, Tailwind 4, React 19.
   and renders `Hud → Hero → Works → Laboratory → Contact → AdminPanel`.
 - `src/app/project/[id]/page.tsx` — thin client wrapper; reads the id with
   `useParams` and renders `<ProjectDetail id={...}/>`.
+- `src/app/fresh/page.tsx` — "Fresh" page. Horizontal scroll feed of latest
+  works, sorted by id descending. Wrapped in `ProjectsProvider`, uses
+  `useProjects()`. Cards show thumbnail, tags, title, meta; click navigates to
+  `/project/[id]`. Scroll-snap CSS + wheel-to-horizontal-scroll conversion.
 - `src/app/globals.css` — **the entire visual system**, ported 1:1 from the old
   `legacy/style.css`. Design tokens live in `:root` (`--bg --text --dim --line
   --accent`). Component classes: `.ui-layer`, `.hero-view`, `.work-*`,
-  `.filter-*`, `.simple-section`, `.admin-*`, `.project-*`. Fonts are referenced
+  `.filter-*`, `.simple-section`, `.admin-*`, `.project-*`, `.fresh-*`. Fonts are referenced
   as CSS variables. Tailwind is available for new work, but the existing look is
   plain CSS classes — don't rewrite it into Tailwind for its own sake.
 
