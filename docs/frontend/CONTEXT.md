@@ -15,10 +15,11 @@ The Next.js app. App Router, TypeScript, Tailwind 4, React 19.
   and renders `Hud → Hero → Works → Laboratory → Contact → AdminPanel`.
 - `src/app/project/[id]/page.tsx` — thin client wrapper; reads the id with
   `useParams` and renders `<ProjectDetail id={...}/>`.
-- `src/app/fresh/page.tsx` — "Fresh" page. Horizontal scroll feed of latest
-  works, sorted by id descending. Wrapped in `ProjectsProvider`, uses
-  `useProjects()`. Cards show thumbnail, tags, title, meta; click navigates to
-  `/project/[id]`. Scroll-snap CSS + wheel-to-horizontal-scroll conversion.
+- `src/app/fresh/page.tsx` — "Fresh" page. Vertical feed of latest works,
+  sorted by id descending. Wrapped in `ProjectsProvider`, uses `useProjects()`.
+  Cards show thumbnail, tags, title, meta; click navigates to `/project/[id]`.
+  Each card is wrapped in `CardErrorBoundary`. Shows empty-state message when
+  loaded and no projects found. `ProjectsProvider` exposes `loaded` flag.
 - `src/app/globals.css` — **the entire visual system**, ported 1:1 from the old
   `legacy/style.css`. Design tokens live in `:root` (`--bg --text --dim --line
   --accent`). Component classes: `.ui-layer`, `.hero-view`, `.work-*`,
@@ -37,6 +38,7 @@ The Next.js app. App Router, TypeScript, Tailwind 4, React 19.
 | `Contact` | yes | Contact links (Supabase read, static fallback) |
 | `AdminPanel` | yes | Sign-in + edit projects/laboratory/contacts (home) |
 | `ProjectDetail` | yes | Project detail + single-project admin (`/project/[id]`) |
+| `CardErrorBoundary` | yes | Error boundary wrapping individual cards in fresh feed |
 | `GrainOverlay` | no | Static SVG grain, in the layout |
 
 Most components are `"use client"` because the site is interactive (clock,

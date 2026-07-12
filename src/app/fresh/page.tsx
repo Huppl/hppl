@@ -48,7 +48,7 @@ function FreshCard({ project, t, onClick }: {
 function FreshContent() {
   const { t } = useLang();
   const router = useRouter();
-  const { projects } = useProjects();
+  const { projects, loaded } = useProjects();
 
   const sorted = [...projects].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
 
@@ -70,6 +70,9 @@ function FreshContent() {
               />
             </CardErrorBoundary>
           ))}
+          {loaded && sorted.length === 0 && (
+            <p className="fresh-empty">{t("fresh_empty")}</p>
+          )}
         </div>
       </section>
     </>

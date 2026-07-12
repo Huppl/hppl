@@ -29,12 +29,14 @@ interface ProjectsContextValue {
   projects: Project[];
   setProjects: React.Dispatch<React.SetStateAction<Project[]>>;
   reload: () => Promise<void>;
+  loaded: boolean;
 }
 
 const ProjectsContext = createContext<ProjectsContextValue | null>(null);
 
 export function ProjectsProvider({ children }: { children: React.ReactNode }) {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   const reload = useCallback(async () => {
     const list = await loadProjects();
@@ -44,6 +46,7 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
         return (a.order_index ?? 0) - (b.order_index ?? 0);
       }),
     );
+    setLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -51,7 +54,7 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
   }, [reload]);
 
   return (
-    <ProjectsContext.Provider value={{ projects, setProjects, reload }}>
+    <ProjectsContext.Provider value={{ projects, setProjects, reload, loaded }}>
       {children}
     </ProjectsContext.Provider>
   );

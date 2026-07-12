@@ -33,6 +33,7 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     pinned: "Закреплено",
     fresh: "Свежее",
     fresh_index: "01 // СВЕЖЕЕ",
+    fresh_empty: "Пока здесь пусто",
 
     laboratory_title: "Обо мне",
     laboratory_studying: "Матвей Лукин — 20-летний студент-дизайнер. Изучаю веб-дизайн, 3D-моделирование и креативное программирование.",
@@ -150,6 +151,7 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     pinned: "Pinned",
     fresh: "Fresh",
     fresh_index: "01 // FRESH",
+    fresh_empty: "Nothing here yet",
 
     laboratory_title: "About Me",
     laboratory_studying: "Matvey Lukin — 20 y/o design student. Studying web design, 3D modeling and creative coding.",
