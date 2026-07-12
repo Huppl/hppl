@@ -1397,6 +1397,15 @@ ul.clean-list li:hover {
   opacity: 0.5;
 }
 
+.fresh-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 64px 16px;
+  color: var(--dim);
+  font-family: var(--font-nonbureau), monospace;
+  font-size: 0.9rem;
+}
+
 /* ============================================================
    Responsive breakpoints
    ============================================================ */
