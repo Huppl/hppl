@@ -27,7 +27,7 @@ export function ProjectDetail({ id }: { id: number }) {
 
   const galleryImages: string[] = [
     ...(project?.image ? [project.image] : []),
-    ...(project?.gallery ?? []),
+    ...(project?.gallery ?? []).map((g) => (typeof g === "string" ? g : g.url)),
   ];
 
   const closeLightbox = useCallback(() => setLightboxIndex(null), []);
